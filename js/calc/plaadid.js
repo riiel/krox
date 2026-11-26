@@ -7,13 +7,13 @@ import * as paevik from '../paevik/store.js';
 export default {
   id: 'plaadid',
   icon: 'plaadid',
-  short: 'Plaadid, vuuk',
+  short: 'Plaadid, ankrud',
   title: 'Plaadid, liim, vuuk',
-  desc: 'Kogused ja pakid',
+  desc: 'Plaadid, liim, vuuk, ankrud',
   render(el) {
     const st = load('plaadid', {
       m2: '', a: '60', b: '60', varu: '10', pakk: '1,44',
-      liim: '4', kott: '25', vl: '3', vs: '8', vkott: '5', lad: 'otse',
+      liim: '4', kott: '25', vl: '3', vs: '8', vkott: '5', lad: 'otse', av: '30', apk: '100', akesk: false,
     });
     el.innerHTML = `
       <div class="card">
@@ -57,11 +57,24 @@ export default {
       <div class="result" id="outV"></div>
       <p class="note">Vuugitäite valem: (A+B)/(A×B) × vuugi laius × sügavus × 1,6 kg/dm³ (+10% varu). Tsementvuugi tihedus on ligikaudne, epoksü puhul vaata tootja tabelit.</p>
 
+      <h2>Plaatimisankrud</h2>
+      <div class="card">
+        <div class="row">
+          <div><label>Ankur iga (cm)</label><input id="av" inputmode="decimal" value="${st.av}"></div>
+          <div><label>Ankruid pakis</label><input id="apk" inputmode="numeric" value="${st.apk}"></div>
+        </div>
+        <label class="check"><input type="checkbox" id="akesk" ${st.akesk ? 'checked' : ''}> Lisa ankur ka külje keskele</label>
+        <p class="note">Ankur läheb iga külje mõlemasse otsa, pikal küljel lisaks iga ~${st.av} cm järel. Üks ankur on kahe plaadi peale ühine.</p>
+      </div>
+      <div class="result" id="outA"></div>
+      <p class="note">Kiilud/korgid on korduvkasutatavad, neid arvestatakse eraldi.</p>
+
       <h2>Ostunimekirja</h2>
       <div class="card">
         <label class="check"><input type="checkbox" id="o_p" checked> Plaadid</label>
         <label class="check"><input type="checkbox" id="o_l" checked> Plaatimisliim</label>
         <label class="check"><input type="checkbox" id="o_v" checked> Vuugitäide</label>
+        <label class="check"><input type="checkbox" id="o_a" checked> Plaatimisankrud</label>
         <label>Objekt</label>
         <input id="o_obj" list="o_objList" placeholder="nt Tamme 5 vannituba" value="${(paevik.objektid().slice(-1)[0] || '').replace(/"/g, '&quot;')}">
         <datalist id="o_objList">${paevik.objektid().map((o) => `<option value="${o.replace(/"/g, '&quot;')}">`).join('')}</datalist>
@@ -70,7 +83,7 @@ export default {
       </div>`;
 
     const $ = (id) => el.querySelector('#' + id);
-    const ids = ['m2', 'a', 'b', 'varu', 'pakk', 'liim', 'kott', 'vl', 'vs', 'vkott'];
+    const ids = ['m2', 'a', 'b', 'varu', 'pakk', 'liim', 'kott', 'vl', 'vs', 'vkott', 'av', 'apk'];
     $('lad').querySelector(`[data-v="${st.lad}"]`).classList.add('on');
 
     let q = {};
@@ -102,7 +115,20 @@ export default {
         line('Kulu', num(kgm2) + ' kg/m²') +
         line('Vuugitäidet kokku', num(vuukKg, 1) + ' kg') +
         line('Pakke', vk ? Math.ceil(vuukKg / vk) + ' pk' : '—', true);
-      q = { tk, pakke, kotte: kott ? Math.ceil(liimKg / kott) : 0, kott, vpk: vk ? Math.ceil(vuukKg / vk) : 0, vk, a, b, m2 };
+      // Ankrud: külje kohta max(2, ceil(külg / vahe)) (+1 keskele), iga ankur jagatud kahe plaadi vahel
+      st.akesk = $('akesk').checked; save('plaadid', st);
+      const av = val($('av')) || 30;
+      const perSide = (L) => (L ? Math.max(2, Math.ceil(L / av)) + (st.akesk ? 1 : 0) : 0);
+      const perTile = (perSide(a) + perSide(b));          // 4 külge × ½
+      const plaate = plaat ? Math.ceil(m2 / plaat) : 0;   // varuplaatidele ankruid ei lähe
+      const ankruid = Math.ceil(perTile * plaate * 1.05); // +5% katki/kadu
+      const apk = val($('apk'));
+      $('outA').innerHTML =
+        line('Ankruid plaadi kohta', perTile ? perTile + ' tk' : '—') +
+        line('Plaate (ilma varuta)', plaate + ' tk') +
+        line('Ankruid kokku (+5%)', ankruid + ' tk', true) +
+        line('Pakke', apk ? Math.ceil(ankruid / apk) + ' pk à ' + apk : '—', true);
+      q = { ankruid, apakke: apk ? Math.ceil(ankruid / apk) : 0, apk, tk, pakke, kotte: kott ? Math.ceil(liimKg / kott) : 0, kott, vpk: vk ? Math.ceil(vuukKg / vk) : 0, vk, a, b, m2 };
     };
 
     $('toList').onclick = () => {
@@ -111,6 +137,7 @@ export default {
       if ($('o_p').checked && (q.pakke || q.tk)) items.push(q.pakke ? { nimi: `Plaadid ${num(q.a)}×${num(q.b)} cm`, kogus: q.pakke, yhik: 'pk' } : { nimi: `Plaadid ${num(q.a)}×${num(q.b)} cm`, kogus: q.tk, yhik: 'tk' });
       if ($('o_l').checked && q.kotte) items.push({ nimi: `Plaatimisliim ${num(q.kott)} kg`, kogus: q.kotte, yhik: 'kott' });
       if ($('o_v').checked && q.vpk) items.push({ nimi: `Vuugitäide ${num(q.vk)} kg`, kogus: q.vpk, yhik: 'pk' });
+      if ($('o_a').checked && q.ankruid) items.push(q.apakke ? { nimi: `Plaatimisankrud (${num(q.apk)} tk pakis)`, kogus: q.apakke, yhik: 'pk' } : { nimi: 'Plaatimisankrud', kogus: q.ankruid, yhik: 'tk' });
       if (!items.length) { $('o_msg').textContent = 'Midagi pole lisada.'; return; }
       const l = addMany($('o_obj').value.trim() || 'Üldine', items);
       $('o_msg').innerHTML = `✓ Lisatud ${items.length} rida nimekirja „${l.nimi.replace(/</g, '&lt;')}“. <a href="#/ostud" style="color:var(--accent)">Ava ostunimekiri →</a>`;
@@ -129,6 +156,7 @@ export default {
       calc();
     });
     ids.forEach((id) => $(id).addEventListener('input', calc));
+    $('akesk').addEventListener('change', calc);
     calc();
   },
 };
