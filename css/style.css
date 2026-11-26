@@ -150,3 +150,7 @@ input[type=time] { padding: 12px 8px; }
 .km-row { margin-bottom: 6px; }
 .km-row input, .km-row select { padding: 10px 8px; }
 .btn:disabled { opacity: .5; }
+.wall { display: grid; grid-template-columns: 34px 1fr 1fr 40px; gap: 6px; align-items: center; margin-bottom: 6px; }
+.wall-head { margin: 10px 0 0; } .wall-head label { margin: 0; }
+.wall .wn { color: var(--muted); text-align: center; }
+.wall input { padding: 10px 8px; }
