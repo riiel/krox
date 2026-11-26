@@ -14,10 +14,12 @@ const fields = [
 export const DEFAULT_FIRMA = {
   nimi: 'KROX OÜ', regkood: '17404836', kmkr: 'EE102941724', aadress: 'Metsa tn 15a-65, 80024 Pärnu', iban: 'EE82 7700 7710 1252 7693', pank: 'LHV Pank',
   telefon: '+372 529 9715', email: 'krox.ou@gmail.com',
+  swift: 'LHVBEE22', viivis: '0,05% päevas', tahtaeg: '7', viimaneArve: '1012',
 };
 const firmaFields = [
   ['nimi', 'Nimi'], ['regkood', 'Registrikood'], ['kmkr', 'KMKR number'], ['aadress', 'Aadress'],
-  ['iban', 'Pangakonto (IBAN)'], ['pank', 'Pank'], ['telefon', 'Telefon'], ['email', 'E-post'],
+  ['iban', 'Pangakonto (IBAN)'], ['pank', 'Pank'], ['swift', 'SWIFT/BIC'], ['telefon', 'Telefon'], ['email', 'E-post'],
+  ['viivis', 'Viivis (nt 0,05% päevas)'], ['tahtaeg', 'Maksetähtaeg (päeva)'], ['viimaneArve', 'Viimane arve number (enne äppi)'],
 ];
 export const firma = () => load('firma', DEFAULT_FIRMA);
 

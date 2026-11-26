@@ -24,8 +24,14 @@ export function upsert(doc) {
 export const remove = (id) => write(KEY, read(KEY, []).filter((d) => d.id !== id));
 export const kliendid = () => read(KLIENDID, {});
 
-// Järgmine number: arve 26-001, pakkumine P26-001
-export function nextNr(tyyp, kuupaev) {
+// Arved: jooksev number (jätkab firma seadetes olevast viimasest numbrist, nt 1012 -> 1013)
+// Pakkumised: P26-001
+export function nextNr(tyyp, kuupaev, viimane = 0) {
+  if (tyyp === 'arve') {
+    const max = read(KEY, []).filter((d) => d.tyyp === 'arve')
+      .reduce((m, d) => Math.max(m, /^\d+$/.test(d.nr) ? +d.nr : 0), parseInt(viimane) || 0);
+    return String(max + 1);
+  }
   const yy = (kuupaev || new Date().toISOString()).slice(2, 4);
   const pre = (tyyp === 'pakkumine' ? 'P' : '') + yy + '-';
   const max = read(KEY, [])
@@ -43,3 +49,12 @@ export function totals(doc) {
   return { read, neto, km, kokku: r2(neto + km) };
 }
 export { n };
+
+// Eesti viitenumber (7-3-1 meetod): 1012 -> 10126
+export function viitenumber(nr) {
+  const base = String(nr).replace(/\D/g, '');
+  if (!base) return '';
+  const w = [7, 3, 1];
+  const sum = [...base].reverse().reduce((s, c, i) => s + +c * w[i % 3], 0);
+  return base + ((10 - (sum % 10)) % 10);
+}

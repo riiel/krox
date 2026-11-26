@@ -154,3 +154,11 @@ a.btn { display: inline-block; }
   .doc-table tr { break-inside: avoid; }
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
+.doc-meta { font-size: 12.5px; }
+.doc-meta .nr { background: #f1ede2; border: 1px solid #ddd3b8; padding: 5px 8px; text-align: center; margin-bottom: 6px; }
+.doc-meta div:not(.nr) { display: flex; justify-content: space-between; gap: 10px; padding: 1px 0; }
+.doc-seller { text-align: right; margin: 4px 0 14px; color: #333; }
+.doc-vat { margin-top: 10px; font-size: 12px; color: #444; }
+.doc-foot { justify-content: space-between !important; text-align: left; }
+.doc-foot .r { text-align: right; }
+.doc-title .t { margin-top: 10px; }

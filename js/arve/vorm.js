@@ -2,19 +2,27 @@
 import * as db from './store.js';
 import * as paevik from '../paevik/store.js';
 import { eur, rates } from '../util.js';
+import { firma } from '../calc/seaded.js';
 
 const YHIKUD = ['m²', 'jm', 'tk', 'h', 'kg', 'm³', 'kmpl'];
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const addDays = (iso, d) => { const x = new Date(iso + 'T12:00'); x.setDate(x.getDate() + d); return paevik.iso(x); };
 const num = (x) => String(Math.round(x * 100) / 100).replace('.', ',');
+const KM_MARKED = [
+  'Pöördmaksustamine / Reverse charge',
+  'Käibe tekkimise koht ei ole Eesti (KMS § 10 lg 4 p 1) / Place of supply outside Estonia',
+  'Intra-Community 0% supply, Art. 138 Dir. 2006/112/EU',
+];
 
 export default function vorm(el, id, q) {
   const old = id ? db.get(id) : null;
   const tyyp = old?.tyyp || q.t || 'arve';
   const t = paevik.today();
+  const f = firma();
+  const payDays = parseInt(f.tahtaeg) || 7;
   const d = old ? structuredClone(old) : {
-    tyyp, nr: db.nextNr(tyyp, t), kuupaev: t,
-    tahtaeg: addDays(t, tyyp === 'arve' ? 14 : 30),
+    tyyp, nr: db.nextNr(tyyp, t, f.viimaneArve), kuupaev: t, keel: 'et', kmMarge: '',
+    tahtaeg: addDays(t, tyyp === 'arve' ? payDays : 30),
     klient: { nimi: '', kood: '', aadress: '', email: '' },
     objekt: '', read: [{ kirjeldus: '', kogus: '', yhik: 'm²', hind: '' }],
     km: String(rates().km), markus: '', makstud: false,
@@ -31,8 +39,10 @@ export default function vorm(el, id, q) {
         <div><label>Number</label><input id="nr" value="${esc(d.nr)}"></div>
         <div><label>Kuupäev</label><input type="date" id="kuupaev" value="${d.kuupaev}"></div>
       </div>
-      <label>${isArve ? 'Maksetähtaeg' : 'Pakkumine kehtib kuni'}</label>
-      <input type="date" id="tahtaeg" value="${d.tahtaeg}">
+      <div class="row">
+        <div><label>${isArve ? 'Maksetähtaeg' : 'Kehtib kuni'}</label><input type="date" id="tahtaeg" value="${d.tahtaeg}"></div>
+        <div><label>Arve keel</label><select id="keel"><option value="et">Eesti</option><option value="en">English</option></select></div>
+      </div>
     </div>
 
     <h2>Klient</h2>
@@ -40,8 +50,8 @@ export default function vorm(el, id, q) {
       <label>Nimi</label>
       <input id="k_nimi" list="kList" placeholder="Ettevõte või eraisik" value="${esc(d.klient.nimi)}">
       <datalist id="kList">${Object.keys(kliendid).map((k) => `<option value="${esc(k)}">`).join('')}</datalist>
-      <label>Registrikood / KMKR (ettevõttel)</label><input id="k_kood" value="${esc(d.klient.kood)}">
-      <label>Aadress</label><input id="k_aadress" value="${esc(d.klient.aadress)}">
+      <label>KMKR nr või registrikood (ettevõttel)</label><input id="k_kood" placeholder="nt FI28827624" value="${esc(d.klient.kood)}">
+      <label>Aadress (võib mitmel real)</label><textarea id="k_aadress" rows="3">${esc(d.klient.aadress)}</textarea>
       <label>E-post</label><input id="k_email" type="email" value="${esc(d.klient.email)}">
     </div>
 
@@ -66,9 +76,18 @@ export default function vorm(el, id, q) {
     </div>
 
     <div class="card">
-      <div class="row">
-        <div><label>Käibemaks (%)</label><input id="km" inputmode="decimal" value="${esc(d.km)}"></div>
-        <div></div>
+      <label>Käibemaks</label>
+      <div class="seg" id="kmSeg">
+        <button data-v="${rates().km}">${rates().km}% (Eesti)</button>
+        <button data-v="0">0% (välismaa / EL)</button>
+        <button data-v="muu">Muu</button>
+      </div>
+      <div id="kmMuu" class="row" style="margin-top:8px"><div><label>Määr (%)</label><input id="km" inputmode="decimal" value="${esc(d.km)}"></div><div></div></div>
+      <div id="kmMargeBox">
+        <label>Käibemaksu märge arvel</label>
+        <input id="kmMarge" list="kmList" value="${esc(d.kmMarge)}" placeholder="Vali või kirjuta">
+        <datalist id="kmList">${KM_MARKED.map((m) => `<option value="${esc(m)}">`).join('')}</datalist>
+        <p class="note">0% määra puhul peab arvel olema märge. Kui pole kindel, milline, küsi raamatupidajalt.</p>
       </div>
       <label>Märkus arvel</label>
       <textarea id="markus" rows="3" placeholder="nt Materjal kliendi poolt">${esc(d.markus)}</textarea>
@@ -110,6 +129,7 @@ export default function vorm(el, id, q) {
     d.nr = $('nr').value.trim(); d.kuupaev = $('kuupaev').value; d.tahtaeg = $('tahtaeg').value;
     d.klient = { nimi: $('k_nimi').value.trim(), kood: $('k_kood').value.trim(), aadress: $('k_aadress').value.trim(), email: $('k_email').value.trim() };
     d.objekt = $('objekt').value.trim(); d.km = $('km').value; d.markus = $('markus').value.trim();
+    d.keel = $('keel').value; d.kmMarge = $('kmMarge').value.trim();
   };
   const tot = () => {
     collect();
@@ -126,8 +146,26 @@ export default function vorm(el, id, q) {
     if (k) { $('k_kood').value = k.kood || ''; $('k_aadress').value = k.aadress || ''; $('k_email').value = k.email || ''; }
   });
   $('kuupaev').addEventListener('change', () => {
-    if (!old) $('tahtaeg').value = addDays($('kuupaev').value, isArve ? 14 : 30);
+    if (!old) $('tahtaeg').value = addDays($('kuupaev').value, isArve ? payDays : 30);
   });
+  $('keel').value = d.keel || 'et';
+
+  // käibemaksu valik
+  const kmUI = () => {
+    const v = db.n($('km').value);
+    const preset = v === db.n(rates().km) ? String(rates().km) : v === 0 ? '0' : 'muu';
+    el.querySelectorAll('#kmSeg button').forEach((b) => b.classList.toggle('on', b.dataset.v === preset));
+    $('kmMuu').style.display = preset === 'muu' ? '' : 'none';
+    $('kmMargeBox').style.display = v === 0 ? '' : 'none';
+  };
+  el.querySelectorAll('#kmSeg button').forEach((b) => (b.onclick = () => {
+    if (b.dataset.v !== 'muu') $('km').value = b.dataset.v;
+    if (b.dataset.v === '0' && !$('kmMarge').value) $('kmMarge').value = KM_MARKED[0];
+    kmUI();
+    if (b.dataset.v === 'muu') { $('kmMuu').style.display = ''; $('km').focus(); }
+    tot();
+  }));
+  $('km').addEventListener('input', kmUI);
 
   // import tööpäevikust
   $('impBtn').onclick = () => { $('imp').hidden = !$('imp').hidden; };
@@ -169,5 +207,6 @@ export default function vorm(el, id, q) {
   if (old) $('del').onclick = () => { if (confirm('Kustutan selle dokumendi?')) { db.remove(d.id); location.hash = '#/arve'; } };
 
   drawRows();
+  kmUI();
   tot();
 }
