@@ -5,6 +5,7 @@ import pind from './calc/pind.js';
 import plaadid from './calc/plaadid.js';
 import parkett from './calc/parkett.js';
 import seaded from './calc/seaded.js';
+import { ico } from './icons.js';
 import paevik from './paevik/paevik.js';
 import lahetus from './lahetus/lahetus.js';
 import kulud from './kulud/kulud.js';
@@ -14,18 +15,19 @@ const tools = [palk, km, pind, plaadid, parkett];
 const all = [paevik, kulud, lahetus, kytus, ...tools, seaded];
 const app = document.getElementById('app');
 
-const tile = (t, wide = false) => `
-  <a class="tile${wide ? ' wide' : ''}" href="#/${t.id}">
-    <span class="ico">${t.icon}</span>
-    <span class="t">${t.title}</span>
-    <span class="d">${t.desc}</span>
+const row = (t) => `
+  <a class="nav-row" href="#/${t.id}">
+    ${ico(t.icon, 'gold')}
+    <span class="nr-text"><span class="t">${t.title}</span><span class="d">${t.desc}</span></span>
+    ${ico('edasi', 'chev')}
   </a>`;
+const chip = (t) => `<a class="nav-chip" href="#/${t.id}">${ico(t.icon, 'gold')}<span>${t.short || t.title}</span></a>`;
 
 function home() {
   app.innerHTML = `
-    <div class="grid">${tile(paevik, true)}${tile(kulud, true)}${tile(lahetus, true)}${tile(kytus, true)}</div>
+    <div class="nav-list">${[paevik, kulud, lahetus, kytus].map(row).join('')}</div>
     <h2>Kalkulaatorid</h2>
-    <div class="grid">${tools.map((t) => tile(t)).join('')}</div>`;
+    <div class="nav-chips">${tools.map(chip).join('')}</div>`;
 }
 
 function route() {
@@ -39,10 +41,11 @@ function route() {
     // alamleht joonistab ise oma pealkirja
     app.innerHTML = '<div id="tool"></div>';
   } else {
-    app.innerHTML = `<a class="back" href="#/">← Tagasi</a><h1>${tool.icon} ${tool.title}</h1><div id="tool"></div>`;
+    app.innerHTML = `<a class="back" href="#/">← Tagasi</a><h1 class="page-h">${ico(tool.icon, 'gold')}${tool.title}</h1><div id="tool"></div>`;
   }
   tool.render(document.getElementById('tool'), rest, q);
 }
 
 window.addEventListener('hashchange', route);
+document.querySelector('.icon-btn').innerHTML = ico('seaded');
 route();

@@ -3,7 +3,8 @@ import { num, val, line, seg, load, save } from '../util.js';
 
 export default {
   id: 'pind',
-  icon: '📐',
+  icon: 'joonlaud',
+  short: 'Ruudud',
   title: 'Ruutude kalkulaator',
   desc: 'Seinad, põrand, ruum',
   render(el) {

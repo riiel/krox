@@ -120,7 +120,7 @@ function month(el) {
 
 export default {
   id: 'paevik',
-  icon: '📒',
+  icon: 'paevik',
   title: 'Tööpäevik',
   desc: 'Tunnid, tükitöö, märkmed',
   render(el, rest = [], q = {}) {

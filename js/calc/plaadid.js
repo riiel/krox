@@ -3,7 +3,8 @@ import { num, val, line, seg, load, save } from '../util.js';
 
 export default {
   id: 'plaadid',
-  icon: '🧱',
+  icon: 'plaadid',
+  short: 'Plaadid, vuuk',
   title: 'Plaadid, liim, vuuk',
   desc: 'Kogused ja pakid',
   render(el) {

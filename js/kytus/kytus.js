@@ -150,7 +150,7 @@ function view(el) {
 
 export default {
   id: 'kytus',
-  icon: '⛽',
+  icon: 'kytus',
   title: 'Kütus pooleks',
   desc: 'Paarimehe osa ja võlg',
   render(el) { view(el); },

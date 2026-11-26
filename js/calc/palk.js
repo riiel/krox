@@ -27,7 +27,8 @@ function solve(target, key, o) {
 
 export default {
   id: 'palk',
-  icon: '💶',
+  icon: 'raha',
+  short: 'Palk',
   title: 'Palgakalkulaator',
   desc: 'Bruto, neto ja tööandja kulu',
   render(el) {

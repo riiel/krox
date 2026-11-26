@@ -155,3 +155,24 @@ input[type=time] { padding: 12px 8px; }
 .wall .wn { color: var(--muted); text-align: center; }
 .wall input { padding: 10px 8px; }
 .mini { display: flex; gap: 6px; } .mini .btn { padding: 6px 10px; }
+
+/* Joonikoonid ja kompaktne avaleht */
+.ico { width: 1em; height: 1em; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; vertical-align: -0.14em; }
+.ico.gold { color: var(--accent); }
+.icon-btn .ico { width: 24px; height: 24px; }
+.page-h { display: flex; align-items: center; gap: 10px; }
+.page-h .ico { width: 26px; height: 26px; }
+.nav-list { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.nav-row { display: flex; align-items: center; gap: 14px; padding: 14px 14px; border-bottom: 1px solid var(--line); }
+.nav-row:last-child { border-bottom: 0; }
+.nav-row:active { background: #1d1d21; }
+.nav-row > .ico { width: 24px; height: 24px; }
+.nr-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.nr-text .t { font-weight: 600; }
+.nr-text .d { color: var(--muted); font-size: .8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nav-row .chev { color: var(--muted); width: 18px; height: 18px; }
+.nav-chips { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.nav-chip { display: flex; align-items: center; gap: 10px; padding: 12px; background: var(--card); border: 1px solid var(--line);
+  border-radius: 12px; font-weight: 600; font-size: .92rem; line-height: 1.2; }
+.nav-chip .ico { width: 22px; height: 22px; }
+.nav-chip:active { background: #1d1d21; }

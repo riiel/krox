@@ -281,7 +281,7 @@ function vaade(el, id) {
 
 export default {
   id: 'lahetus',
-  icon: '✈️',
+  icon: 'lennuk',
   title: 'Lähetused',
   desc: 'Päevaraha, korraldus, raamatupidamine',
   render(el, rest = []) {

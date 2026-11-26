@@ -3,7 +3,8 @@ import { eur, val, round2, rates, line, seg, load, save } from '../util.js';
 
 export default {
   id: 'km',
-  icon: '🧾',
+  icon: 'protsent',
+  short: 'Käibemaks',
   title: 'Käibemaks',
   desc: 'Lisa või eralda KM',
   render(el) {

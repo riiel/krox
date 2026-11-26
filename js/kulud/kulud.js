@@ -223,7 +223,7 @@ async function vorm(el, id) {
 
 export default {
   id: 'kulud',
-  icon: '📸',
+  icon: 'kaamera',
   title: 'Kulud ja tšekid',
   desc: 'Pildista → Merit + Drive',
   render(el, rest = []) {

@@ -13,7 +13,8 @@ export function parkett(W, b) {
 
 export default {
   id: 'parkett',
-  icon: '🪵',
+  icon: 'parkett',
+  short: 'Parkett',
   title: 'Parketi ridade jaotus',
   desc: 'Täis lauaga või võrdsed ääred?',
   render(el) {

@@ -14,7 +14,7 @@ const fields = [
 
 export default {
   id: 'seaded',
-  icon: '⚙',
+  icon: 'seaded',
   title: 'Seaded',
   desc: '',
   render(el) {
