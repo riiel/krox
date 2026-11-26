@@ -1,4 +1,5 @@
 // Lähetused: nimekiri, vorm, korraldus (PDF allkirjastamiseks) ja raamatupidamise fail
+import { ico } from '../icons.js';
 import * as c from './calc.js';
 import { docx, shareFile } from '../docx.js';
 
@@ -193,10 +194,10 @@ function vaade(el, id) {
       <a class="back" href="#/lahetus">← Lähetused</a>
       <h2 style="margin-top:6px">1. Korraldus (allkirjastamiseks)</h2>
       <div class="actions" style="margin-top:0">
-        <button class="btn primary" id="word">${canShareDocx() ? '📄 Jaga Word-failina' : '📄 Salvesta Word-fail'}</button>
-        <button class="btn" id="pdf">🖨 PDF</button>
+        <button class="btn primary" id="word">${ico('fail')}${canShareDocx() ? 'Jaga Word-failina' : 'Salvesta Word-fail'}</button>
+        <button class="btn" id="pdf">${ico('printer')}PDF</button>
       </div>
-      <div class="actions" style="margin-top:8px"><a class="btn" href="#/lahetus/muuda/${x.id}">✎ Muuda</a></div>
+      <div class="actions" style="margin-top:8px"><a class="btn" href="#/lahetus/muuda/${x.id}">${ico('pliiats')}Muuda</a></div>
       <p class="note" id="wmsg">${canShareDocx()
         ? 'Avaneb jagamise menüü: vali <b>Drive</b> ja kaust.'
         : 'Fail salvestub kausta „Allalaaditud“. Drive\'i panekuks: Drive → <b>+</b> → <b>Laadi üles</b> → Allalaaditud → vali fail.'}</p>
@@ -204,8 +205,8 @@ function vaade(el, id) {
       <h2>2. Raamatupidajale</h2>
       <pre class="rp" id="rp">${esc(rp)}</pre>
       <div class="actions" style="margin-top:8px">
-        <button class="btn primary" id="copy">📋 Kopeeri</button>
-        <button class="btn" id="share">📤 Jaga / Drive</button>
+        <button class="btn primary" id="copy">${ico('kopeeri')}Kopeeri</button>
+        <button class="btn" id="share">${ico('jaga')}Jaga / Drive</button>
       </div>
       <p class="note" id="msg"></p>
       <h2>Korralduse eelvaade</h2>

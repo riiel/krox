@@ -60,7 +60,7 @@ export default {
       <div class="result" id="out"></div>
       <p class="note">Määrad: tulumaks ${r.tulumaks}%, töötuskindlustus ${r.tkTootaja}% + ${r.tkTooandja}%, sotsiaalmaks ${r.sotsiaalmaks}%.
       Maksuvaba tulu kehtib vaid siis, kui töötaja on esitanud avalduse (ühele tööandjale, kuni ${r.maksuvaba} €).
-      Sotsiaalmaksu kuumiinimumi siin ei arvestata. Määrasid saad muuta ⚙ seadetes.</p>`;
+      Sotsiaalmaksu kuumiinimumi siin ei arvestata. Määrasid saad muuta seadetes.</p>`;
 
     const $ = (id) => el.querySelector('#' + id);
     const modeBox = $('mode');

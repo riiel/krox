@@ -1,4 +1,5 @@
 // Tööpäevik: kuukalender, päeva kirjed, kuu kokkuvõte
+import { ico } from '../icons.js';
 import * as db from './store.js';
 import { eur, num } from '../util.js';
 import kirje from './kirje.js';
@@ -17,7 +18,7 @@ function entryCard(e) {
     <a class="entry" href="#/paevik/kirje/${e.id}">
       <div class="entry-top"><b>${esc(e.objekt) || 'Objekt määramata'}</b><span>${t ? num(t) + ' h' : ''}</span></div>
       ${read ? `<div class="entry-sub">${read}</div>` : ''}
-      ${e.markmed ? `<div class="entry-sub muted">📝 ${esc(e.markmed).slice(0, 80)}</div>` : ''}
+      ${e.markmed ? `<div class="entry-sub muted">${ico('pliiats')}${esc(e.markmed).slice(0, 80)}</div>` : ''}
       ${s ? `<div class="entry-sum">${eur(s)}</div>` : ''}
     </a>`;
 }
@@ -44,7 +45,7 @@ function backupHint() {
   const lb = lastBackup();
   const days = lb ? Math.floor((Date.now() - new Date(lb).getTime()) / 864e5) : null;
   if (days !== null && days < 14) return `<p class="note">Viimane varukoopia: ${lb.split('-').reverse().join('.')}</p>`;
-  return `<a class="card backup-hint" href="#/seaded">💾 ${lb ? `Viimane varukoopia ${days} päeva tagasi` : 'Varukoopiat pole veel tehtud'}, tee uus seadetes →</a>`;
+  return `<a class="card backup-hint" href="#/seaded">${ico('salvesta')}${lb ? `Viimane varukoopia ${days} päeva tagasi` : 'Varukoopiat pole veel tehtud'}, tee uus seadetes →</a>`;
 }
 
 function month(el) {
@@ -108,7 +109,7 @@ function month(el) {
         <div class="entry-top"><b>${esc(k)}</b><span>${eur(o.s)}</span></div>
         <div class="entry-sub">${o.h ? num(o.h) + ' h' : ''}${Object.entries(o.q).map(([q, v]) => ` · ${esc(q)}: ${num(v)}`).join('')}</div>
       </div>`).join('')}
-    ${list.length ? '<button class="btn" id="csv" style="width:100%;margin-top:6px">⬇ Lae kuu alla (CSV / Excel)</button>' : ''}
+    ${list.length ? `<button class="btn" id="csv" style="width:100%;margin-top:6px">${ico('alla')}Lae kuu alla (CSV / Excel)</button>` : ''}
     ${backupHint()}`;
 
   const shift = (k) => { const d = new Date(y, m - 1 + k, 1); sel = db.iso(d); month(el); };

@@ -1,4 +1,5 @@
 // Seaded: varukoopia, maksumäärad
+import { ico } from '../icons.js';
 import { val, rates, save, DEFAULT_RATES } from '../util.js';
 import { exportAll, importFile, lastBackup } from '../backup.js';
 import { pin, setPin, api } from '../kulud/store.js';
@@ -38,8 +39,8 @@ export default {
         Tee aeg-ajalt varukoopia ja hoia faili näiteks Google Drive'is.</p>
         <p class="note"><b>Viimane varukoopia:</b> ${lb ? lb.split('-').reverse().join('.') : 'pole veel tehtud'}</p>
         <div class="actions" style="margin-top:8px">
-          <button class="btn primary" id="exp">⬇ Tee varukoopia</button>
-          <button class="btn" id="imp">⬆ Taasta failist</button>
+          <button class="btn primary" id="exp">${ico('alla')}Tee varukoopia</button>
+          <button class="btn" id="imp">${ico('yles')}Taasta failist</button>
         </div>
         <input type="file" id="file" accept=".json,application/json" hidden>
         <p class="note" id="bmsg"></p>

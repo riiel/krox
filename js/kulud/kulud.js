@@ -1,4 +1,5 @@
 // Kulud ja tšekid: pildista -> loe automaatselt -> Merit (kinnitamist ootama) + Drive
+import { ico } from '../icons.js';
 import * as db from './store.js';
 import { compress, toBase64, jpegToPdf } from './pilt.js';
 import * as paevik from '../paevik/store.js';
@@ -23,13 +24,13 @@ async function list(el) {
   const saatmata = items.filter((k) => k.merit !== 'ok').length;
 
   el.innerHTML = `
-    <label class="btn primary cam">📷 Pildista tšekk
+    <label class="btn primary cam">${ico('kaamera')}Pildista tšekk
       <input type="file" id="cam" accept="image/*" capture="environment" hidden>
     </label>
-    <label class="btn" style="display:block;text-align:center;margin-top:8px">🖼 Vali galeriist
+    <label class="btn" style="display:block;text-align:center;margin-top:8px">${ico('pilt')}Vali galeriist
       <input type="file" id="gal" accept="image/*" hidden>
     </label>
-    ${db.pin() ? '' : '<a class="card backup-hint" href="#/seaded">🔑 Automaatseks lugemiseks ja Meritisse saatmiseks sisesta seadetes PIN →</a>'}
+    ${db.pin() ? '' : `<a class="card backup-hint" href="#/seaded">${ico('voti')}Automaatseks lugemiseks ja Meritisse saatmiseks sisesta seadetes PIN →</a>`}
 
     <div class="month-nav" style="margin-top:18px">
       <button class="btn" id="prev">‹</button><b>${KUUD[m - 1]} ${y}</b><button class="btn" id="next">›</button>
@@ -39,7 +40,7 @@ async function list(el) {
       <div class="line"><span>Oma rahaga (${oma.length})</span><b>${eur(sum(oma))}</b></div>
       <div class="line big"><span>Kokku</span><b>${eur(sum(items))}</b></div>
     </div>
-    ${saatmata ? `<button class="btn" id="sendAll" style="width:100%;margin-top:10px">⬆ Saada Meritisse saatmata tšekid (${saatmata})</button>` : ''}
+    ${saatmata ? `<button class="btn" id="sendAll" style="width:100%;margin-top:10px">${ico('yles')}Saada Meritisse saatmata tšekid (${saatmata})</button>` : ''}
     <div style="margin-top:12px">
     ${items.length ? items.map((k) => `
       <a class="entry kulu" href="#/kulud/k/${k.id}">
@@ -51,7 +52,7 @@ async function list(el) {
         </div>
       </a>`).join('') : '<p class="note">Selle kuu tšekke pole.</p>'}
     </div>
-    ${items.length ? '<button class="btn" id="csv" style="width:100%;margin-top:6px">⬇ Kuu nimekiri (CSV / Excel)</button>' : ''}`;
+    ${items.length ? `<button class="btn" id="csv" style="width:100%;margin-top:6px">${ico('alla')}Kuu nimekiri (CSV / Excel)</button>` : ''}`;
 
   const $ = (q) => el.querySelector('#' + q);
   const pick = async (input) => {
@@ -118,7 +119,7 @@ async function vorm(el, id) {
 
     <div class="card">
       <label>Makstud</label>
-      <div class="seg" id="mv"><button data-v="firma">💳 Firma kaardiga</button><button data-v="isiklik">👛 Oma rahaga</button></div>
+      <div class="seg" id="mv"><button data-v="firma">${ico('kaart')}Firma kaardiga</button><button data-v="isiklik">${ico('rahakott')}Oma rahaga</button></div>
       <label>Müüja</label><input id="myyja" value="${esc(k.myyja)}" placeholder="nt Bauhof Group AS">
       <div class="row">
         <div><label>Kuupäev</label><input type="date" id="kuupaev" value="${k.kuupaev}"></div>
@@ -146,7 +147,7 @@ async function vorm(el, id) {
       <button class="btn primary" id="save">${k.merit === 'ok' ? 'Salvesta' : 'Salvesta ja saada Meritisse'}</button>
     </div>
     <div class="actions" style="margin-top:8px">
-      <button class="btn" id="drive">📤 Pilt Drive'i</button>
+      <button class="btn" id="drive">${ico('jaga')}Pilt Drive'i</button>
       ${old ? '<button class="btn danger" id="del">Kustuta</button>' : ''}
     </div>
     <p class="note" id="msg">${k.merit === 'ok' ? '✓ Tšekk on Meritis kinnitamist ootamas.' : ''}</p>`;
@@ -208,7 +209,7 @@ async function vorm(el, id) {
 
   // automaatne lugemine uue tšeki puhul
   if (!old && db.pin()) {
-    $('ocr').textContent = '🔍 Loen tšekki…';
+    $('ocr').innerHTML = `${ico('otsi')}Loen tšekki…`;
     try {
       const o = await db.api('loe-tsekk', { image: await toBase64(k.pilt) });
       fill(o);

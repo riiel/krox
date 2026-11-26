@@ -176,3 +176,6 @@ input[type=time] { padding: 12px 8px; }
   border-radius: 12px; font-weight: 600; font-size: .92rem; line-height: 1.2; }
 .nav-chip .ico { width: 22px; height: 22px; }
 .nav-chip:active { background: #1d1d21; }
+.btn .ico, .seg .ico, .backup-hint .ico, .note .ico, .entry-sub .ico { width: 1.15em; height: 1.15em; margin-right: 7px; vertical-align: -0.2em; }
+.seg button.on .ico { color: var(--accent-ink); }
+.mini .btn .ico { margin-right: 0; }

@@ -1,4 +1,5 @@
 // Kütus pooleks paarimehega: ostud, tema osa, maksed, võlg
+import { ico } from '../icons.js';
 import { eur, rates } from '../util.js';
 
 const KEY = 'krox.kytus';
@@ -34,8 +35,8 @@ function view(el) {
       <div class="line big"><span>${esc(nimi)} võlgneb</span><b>${eur(volg)}</b></div>
     </div>
     ${volg > 0 ? `<div class="actions" style="margin-top:8px">
-      <button class="btn" id="maksis">💶 Maksis…</button>
-      <button class="btn" id="kopeeri">📋 Kopeeri kokkuvõte</button>
+      <button class="btn" id="maksis">${ico('raha')}Maksis…</button>
+      <button class="btn" id="kopeeri">${ico('kopeeri')}Kopeeri kokkuvõte</button>
     </div>` : ''}
     <p class="note" id="msg"></p>
 
@@ -64,7 +65,7 @@ function view(el) {
         <div class="entry-top" style="margin-top:8px;align-items:center">${tag}
           <span class="mini">
             ${j > 0 ? `<button class="btn small" data-act="koik">✓ Makstud</button>` : ''}
-            <button class="btn small" data-act="muuda">✎</button>
+            <button class="btn small" data-act="muuda">${ico('pliiats')}</button>
           </span>
         </div>
       </div>`;
