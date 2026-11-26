@@ -1,4 +1,4 @@
-// Parketi ridade jaotus: kas alustada täis lauaga või lõigata mõlemad ääred võrdseks
+// Laudise ridade jaotus (parkett, seina- ja laelaudis): täis lauaga või mõlemad ääred võrdseks
 import { num, val, line, load, save } from '../util.js';
 
 export function parkett(W, b) {
@@ -14,15 +14,15 @@ export function parkett(W, b) {
 export default {
   id: 'parkett',
   icon: 'parkett',
-  short: 'Parkett',
-  title: 'Parketi ridade jaotus',
-  desc: 'Täis lauaga või võrdsed ääred?',
+  short: 'Laudis',
+  title: 'Laudise ridade jaotus',
+  desc: 'Parkett, seina- ja laelaudis',
   render(el) {
     const st = load('parkett', { W: '', W2: '', b: '187', min: '33' });
     el.innerHTML = `
       <div class="card">
         <div class="row">
-          <div><label>Laius vuukide vahel (mm)</label><input id="W" inputmode="decimal" placeholder="nt 2670" value="${st.W}"></div>
+          <div><label>Laius (mm, vuuk maha arvatud)</label><input id="W" inputmode="decimal" placeholder="nt 2670" value="${st.W}"></div>
           <div><label>Laius teisest otsast (mm)</label><input id="W2" inputmode="decimal" placeholder="valikuline" value="${st.W2}"></div>
         </div>
         <div class="row">
@@ -31,7 +31,7 @@ export default {
         </div>
       </div>
       <div class="result" id="out"></div>
-      <p class="note">Katvuslaius = nähtav laius ilma punnita (pane kaks lauda kokku ja mõõda). Esimesel real lõika punn seinapoolsest servast ära.
+      <p class="note">Katvuslaius = nähtav laius ilma punnita (pane kaks lauda kokku ja mõõda). Esimesel real lõika punn servapoolsest küljest ära. Sobib parketile, seina- ja laelaudisele.
       Kui seinad pole paralleelsed, märgi esimese rea lõikejoon seina järgi kaldu.</p>`;
 
     const $ = (id) => el.querySelector('#' + id);
