@@ -64,3 +64,46 @@ input:focus, select:focus { outline: 2px solid var(--accent); border-color: tran
 .opening { display: grid; grid-template-columns: 1fr 1fr 70px 40px; gap: 6px; align-items: end; margin-bottom: 6px; }
 .opening input { padding: 10px 8px; }
 .opening .x { padding: 10px 0; text-align: center; }
+
+/* Avalehe lai paan */
+.tile.wide { grid-column: 1 / -1; min-height: 0; flex-direction: row; align-items: center; gap: 14px;
+  border-color: var(--accent); }
+.tile.wide .t { font-size: 1.1rem; }
+.tile.wide .d { margin-left: auto; text-align: right; }
+
+/* Tööpäevik */
+.month-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.month-nav b { font-size: 1.1rem; text-transform: capitalize; }
+.month-nav .btn { width: 48px; font-size: 1.3rem; padding: 6px 0; }
+.cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal .dow { text-align: center; color: var(--muted); font-size: .75rem; padding: 4px 0; }
+.day { aspect-ratio: 1 / 1.05; border: 1px solid var(--line); background: var(--card); color: var(--text); border-radius: 10px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 0; font-size: .95rem; }
+.day small { font-size: .65rem; color: var(--accent); font-weight: 700; }
+.day.has { background: #2a2618; border-color: #5a4a26; }
+.day.today span { text-decoration: underline; text-underline-offset: 3px; }
+.day.sel { outline: 2px solid var(--accent); outline-offset: -1px; }
+.day-head { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
+.day-head h2 { margin: 18px 0 10px; }
+.entry { display: block; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 8px; }
+.entry-top { display: flex; justify-content: space-between; gap: 10px; }
+.entry-top span { color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.entry-sub { color: var(--muted); font-size: .85rem; margin-top: 4px; line-height: 1.4; }
+.entry-sub.muted { font-style: italic; }
+.entry-sum { color: var(--accent); font-weight: 700; margin-top: 6px; text-align: right; }
+.card.obj { padding: 12px 14px; margin: 8px 0 0; }
+.card.obj .entry-top span { color: var(--accent); font-weight: 700; }
+
+textarea { width: 100%; padding: 12px; font-size: 1rem; border-radius: 10px; border: 1px solid var(--line);
+  background: #15171b; color: var(--text); font-family: inherit; resize: vertical; }
+input[type=date], input[type=time] { color-scheme: dark; }
+.work { border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 10px; }
+.work-row { display: grid; grid-template-columns: 1fr 78px 1fr 40px; gap: 6px; margin-top: 6px; }
+.work-row input, .work-row select { padding: 10px 8px; }
+.actions { display: flex; gap: 10px; margin-top: 14px; }
+.actions .btn { flex: 1; padding: 14px; font-size: 1rem; }
+.btn.danger { color: #ff7a7a; border-color: #5a2a2a; flex: 0 0 auto !important; }
+input, select { min-width: 0; }
+.row3 > div, .row > div { min-width: 0; }
+.time-row { grid-template-columns: 1fr 1fr 72px; }
+input[type=time] { padding: 12px 8px; }
