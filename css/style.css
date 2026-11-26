@@ -1,11 +1,11 @@
 :root {
-  --bg: #16181c;
-  --card: #20232a;
-  --line: #2f333c;
+  --bg: #0b0b0b;
+  --card: #17171a;
+  --line: #2a2a2e;
   --text: #eceef2;
   --muted: #9aa1ad;
-  --accent: #f2a541;
-  --accent-ink: #1a1306;
+  --accent: #c4a96b;
+  --accent-ink: #141008;
   --radius: 14px;
 }
 * { box-sizing: border-box; }
@@ -37,23 +37,23 @@ h2 { font-size: 1rem; margin: 22px 0 10px; color: var(--muted); font-weight: 600
 
 label { display: block; font-size: .85rem; color: var(--muted); margin: 10px 0 5px; }
 input, select { width: 100%; padding: 12px; font-size: 1.05rem; border-radius: 10px; border: 1px solid var(--line);
-  background: #15171b; color: var(--text); }
+  background: #0f0f11; color: var(--text); }
 input:focus, select:focus { outline: 2px solid var(--accent); border-color: transparent; }
 .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
 .check { display: flex; align-items: center; gap: 10px; margin-top: 12px; color: var(--text); font-size: .95rem; }
 .check input { width: 22px; height: 22px; }
 
-.seg { display: flex; background: #15171b; border: 1px solid var(--line); border-radius: 10px; padding: 3px; gap: 3px; }
+.seg { display: flex; background: #0f0f11; border: 1px solid var(--line); border-radius: 10px; padding: 3px; gap: 3px; }
 .seg button { flex: 1; border: 0; background: transparent; color: var(--muted); padding: 10px 6px; border-radius: 8px;
   font-size: .9rem; font-weight: 600; }
 .seg button.on { background: var(--accent); color: var(--accent-ink); }
 
-.btn { border: 1px solid var(--line); background: #15171b; color: var(--text); padding: 10px 14px; border-radius: 10px; font-size: .95rem; }
+.btn { border: 1px solid var(--line); background: #0f0f11; color: var(--text); padding: 10px 14px; border-radius: 10px; font-size: .95rem; }
 .btn.small { padding: 6px 10px; font-size: .85rem; }
 .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 650; }
 
-.result { background: #1b1e24; border: 1px solid var(--line); border-radius: var(--radius); padding: 6px 16px; }
+.result { background: #131315; border: 1px solid var(--line); border-radius: var(--radius); padding: 6px 16px; }
 .result .line { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--line); gap: 12px; }
 .result .line:last-child { border-bottom: 0; }
 .result .line span:first-child { color: var(--muted); }
@@ -80,7 +80,7 @@ input:focus, select:focus { outline: 2px solid var(--accent); border-color: tran
 .day { aspect-ratio: 1 / 1.05; border: 1px solid var(--line); background: var(--card); color: var(--text); border-radius: 10px;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 0; font-size: .95rem; }
 .day small { font-size: .65rem; color: var(--accent); font-weight: 700; }
-.day.has { background: #2a2618; border-color: #5a4a26; }
+.day.has { background: #1f1b12; border-color: #4d4228; }
 .day.today span { text-decoration: underline; text-underline-offset: 3px; }
 .day.sel { outline: 2px solid var(--accent); outline-offset: -1px; }
 .day-head { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
@@ -95,7 +95,7 @@ input:focus, select:focus { outline: 2px solid var(--accent); border-color: tran
 .card.obj .entry-top span { color: var(--accent); font-weight: 700; }
 
 textarea { width: 100%; padding: 12px; font-size: 1rem; border-radius: 10px; border: 1px solid var(--line);
-  background: #15171b; color: var(--text); font-family: inherit; resize: vertical; }
+  background: #0f0f11; color: var(--text); font-family: inherit; resize: vertical; }
 input[type=date], input[type=time] { color-scheme: dark; }
 .work { border-bottom: 1px solid var(--line); padding-bottom: 10px; margin-bottom: 10px; }
 .work-row { display: grid; grid-template-columns: 1fr 78px 1fr 40px; gap: 6px; margin-top: 6px; }
@@ -107,3 +107,7 @@ input, select { min-width: 0; }
 .row3 > div, .row > div { min-width: 0; }
 .time-row { grid-template-columns: 1fr 1fr 72px; }
 input[type=time] { padding: 12px 8px; }
+
+.logo-img { height: 34px; display: block; }
+.hero { text-align: center; padding: 10px 0 22px; }
+.hero img { width: 78%; max-width: 380px; }
