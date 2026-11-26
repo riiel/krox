@@ -214,3 +214,4 @@ h2.grp .ico { width: 18px; height: 18px; color: var(--accent); margin: 0; }
 .ost.editing [data-f=nimi] { grid-column: 1 / -1; }
 .ost.editing .btn.danger { padding: 6px 10px; } .ost.editing .btn.danger .ico { margin: 0; }
 .seg.kust button { font-size: .85rem; padding: 10px 4px; gap: 5px; }
+.row, .row3 { align-items: end; }

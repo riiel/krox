@@ -22,7 +22,7 @@ export default {
     el.innerHTML = `
       <div class="card">
         <div class="row">
-          <div><label>Laius (mm, vuuk maha arvatud)</label><input id="W" inputmode="decimal" placeholder="nt 2670" value="${st.W}"></div>
+          <div><label>Laius (mm)</label><input id="W" inputmode="decimal" placeholder="nt 2670" value="${st.W}"></div>
           <div><label>Laius teisest otsast (mm)</label><input id="W2" inputmode="decimal" placeholder="valikuline" value="${st.W2}"></div>
         </div>
         <div class="row">
@@ -31,7 +31,7 @@ export default {
         </div>
       </div>
       <div class="result" id="out"></div>
-      <p class="note">Katvuslaius = nähtav laius ilma punnita (pane kaks lauda kokku ja mõõda). Esimesel real lõika punn servapoolsest küljest ära. Sobib parketile, seina- ja laelaudisele.
+      <p class="note">Laius sisesta nii, et vuuk on juba maha arvatud. Katvuslaius = nähtav laius ilma punnita (pane kaks lauda kokku ja mõõda). Esimesel real lõika punn servapoolsest küljest ära. Sobib parketile, seina- ja laelaudisele.
       Kui seinad pole paralleelsed, märgi esimese rea lõikejoon seina järgi kaldu.</p>`;
 
     const $ = (id) => el.querySelector('#' + id);
