@@ -111,3 +111,4 @@ input[type=time] { padding: 12px 8px; }
 .logo-img { height: 34px; display: block; }
 .hero { text-align: center; padding: 10px 0 22px; }
 .hero img { width: 78%; max-width: 380px; }
+.backup-hint { display: block; margin-top: 14px; border-color: #4d4228; color: var(--accent); font-size: .9rem; }

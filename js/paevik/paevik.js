@@ -2,6 +2,7 @@
 import * as db from './store.js';
 import { eur, num } from '../util.js';
 import kirje from './kirje.js';
+import { lastBackup } from '../backup.js';
 
 const KUUD = ['jaanuar', 'veebruar', 'märts', 'aprill', 'mai', 'juuni', 'juuli', 'august', 'september', 'oktoober', 'november', 'detsember'];
 let sel = db.today(); // valitud päev
@@ -36,6 +37,14 @@ function csv(ym, list) {
   a.href = URL.createObjectURL(new Blob([text], { type: 'text/csv' }));
   a.download = `toopaevik-${ym}.csv`;
   a.click();
+}
+
+function backupHint() {
+  if (!db.all().length) return '';
+  const lb = lastBackup();
+  const days = lb ? Math.floor((Date.now() - new Date(lb).getTime()) / 864e5) : null;
+  if (days !== null && days < 14) return `<p class="note">Viimane varukoopia: ${lb.split('-').reverse().join('.')}</p>`;
+  return `<a class="card backup-hint" href="#/seaded">💾 ${lb ? `Viimane varukoopia ${days} päeva tagasi` : 'Varukoopiat pole veel tehtud'}, tee uus seadetes →</a>`;
 }
 
 function month(el) {
@@ -100,7 +109,7 @@ function month(el) {
         <div class="entry-sub">${o.h ? num(o.h) + ' h' : ''}${Object.entries(o.q).map(([q, v]) => ` · ${esc(q)}: ${num(v)}`).join('')}</div>
       </div>`).join('')}
     ${list.length ? '<button class="btn" id="csv" style="width:100%;margin-top:6px">⬇ Lae kuu alla (CSV / Excel)</button>' : ''}
-    <p class="note">Andmed on praegu ainult selles telefonis.</p>`;
+    ${backupHint()}`;
 
   const shift = (k) => { const d = new Date(y, m - 1 + k, 1); sel = db.iso(d); month(el); };
   el.querySelector('#prev').onclick = () => shift(-1);

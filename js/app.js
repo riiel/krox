@@ -20,7 +20,6 @@ const tile = (t, wide = false) => `
 
 function home() {
   app.innerHTML = `
-    <div class="hero"><img src="img/logo.png" alt="KROX OÜ – ehitus ja plaatimine"></div>
     <div class="grid">${tile(paevik, true)}</div>
     <h2>Kalkulaatorid</h2>
     <div class="grid">${tools.map((t) => tile(t)).join('')}</div>`;
