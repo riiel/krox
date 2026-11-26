@@ -21,6 +21,12 @@ function upsert(x) {
   write(SEADED, { ...s, lahetatav: x.lahetatav, sihtkoht: x.sihtkoht, eesmark: x.eesmark, korge: x.korge, madal: x.madal, firma: x.firma });
 }
 
+// Eelmise kuu viimane päev: 2026-10-12 -> 2026-09-30
+function prevMonthEnd(isoDate) {
+  const [y, m] = isoDate.split('-').map(Number);
+  return c.iso(new Date(y, m - 1, 0));
+}
+
 function nextNr() {
   const y = String(new Date().getFullYear());
   const nums = [seaded().viimaneNr, ...read(KEY, []).map((x) => x.nr)]
@@ -60,7 +66,7 @@ function vorm(el, id) {
   const old = id ? get(id) : null;
   const s = seaded();
   const x = old ? structuredClone(old) : {
-    nr: nextNr(), kuupaev: c.iso(new Date()), firma: s.firma, lahetatav: s.lahetatav, sihtkoht: s.sihtkoht,
+    nr: nextNr(), kuupaev: prevMonthEnd(c.iso(new Date())), firma: s.firma, lahetatav: s.lahetatav, sihtkoht: s.sihtkoht,
     eesmark: s.eesmark, korge: s.korge, madal: s.madal, perioodid: [{ algus: '', lopp: '' }],
     lisad: 'Majutus ja transport sihtkohas on tagatud vastuvõtva poole poolt.\nMuud ettenägematud kulud hüvitatakse kuludokumentide alusel.',
   };
@@ -105,6 +111,16 @@ function vorm(el, id) {
     </div>`;
 
   const $ = (q) => el.querySelector('#' + q);
+  // korralduse kuupäev = esimesele lähetuspäevale eelneva kuu viimane päev (kui pole käsitsi muudetud)
+  let dateTouched = false;
+  const autoDate = () => {
+    if (dateTouched) return;
+    const first = c.days(x.perioodid)[0];
+    if (first) $('kuupaev').value = prevMonthEnd(first);
+  };
+  // vana korraldus, mille kuupäev on pärast lähetuse algust -> paranda
+  if (old && c.days(x.perioodid)[0] && x.kuupaev >= c.days(x.perioodid)[0]) autoDate();
+  $('kuupaev').addEventListener('input', () => { dateTouched = true; });
   const drawPer = () => {
     $('per').innerHTML = x.perioodid.map((p, i) => `
       <div class="per" data-i="${i}">
@@ -116,6 +132,7 @@ function vorm(el, id) {
       const p = x.perioodid[inp.closest('.per').dataset.i];
       p[inp.dataset.f] = inp.value;
       if (inp.dataset.f === 'algus' && (!p.lopp || p.lopp < p.algus)) { p.lopp = p.algus; drawPer(); }
+      autoDate();
       upd();
     }));
     $('per').querySelectorAll('[data-del]').forEach((b) => (b.onclick = () => { x.perioodid.splice(+b.dataset.del, 1); drawPer(); upd(); }));
