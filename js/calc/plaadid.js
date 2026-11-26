@@ -13,7 +13,7 @@ export default {
   render(el) {
     const st = load('plaadid', {
       m2: '', a: '60', b: '60', varu: '10', pakk: '1,44',
-      liim: '4', kott: '25', vl: '3', vs: '8', vkott: '5', lad: 'otse', av: '30', apk: '100', akesk: false,
+      liim: '4', kott: '25', vl: '3', vs: '8', vkott: '5', lad: 'otse', av: '30', apk: '100', akesk: false, aw: '', ah: '',
     });
     el.innerHTML = `
       <div class="card">
@@ -63,8 +63,13 @@ export default {
           <div><label>Ankur iga (cm)</label><input id="av" inputmode="decimal" value="${st.av}"></div>
           <div><label>Ankruid pakis</label><input id="apk" inputmode="numeric" value="${st.apk}"></div>
         </div>
+        <label>Seina / põranda mõõdud (mm) – täpsem arvutus</label>
+        <div class="row">
+          <input id="aw" inputmode="numeric" placeholder="Laius, nt 2350" value="${st.aw}">
+          <input id="ah" inputmode="numeric" placeholder="Kõrgus, nt 2720" value="${st.ah}">
+        </div>
         <label class="check"><input type="checkbox" id="akesk" ${st.akesk ? 'checked' : ''}> Lisa ankur ka külje keskele</label>
-        <p class="note">Ankur läheb iga külje mõlemasse otsa, pikal küljel lisaks iga ~${st.av} cm järel. Üks ankur on kahe plaadi peale ühine.</p>
+        <p class="note">Ankur läheb plaatide vahelisel vuugil iga plaadiserva mõlemasse otsa (pikal serval lisaks iga ~${st.av} cm). Mõõtudega arvutus jätab seina ääred välja.</p>
       </div>
       <div class="result" id="outA"></div>
       <p class="note">Kiilud/korgid on korduvkasutatavad, neid arvestatakse eraldi.</p>
@@ -83,7 +88,7 @@ export default {
       </div>`;
 
     const $ = (id) => el.querySelector('#' + id);
-    const ids = ['m2', 'a', 'b', 'varu', 'pakk', 'liim', 'kott', 'vl', 'vs', 'vkott', 'av', 'apk'];
+    const ids = ['m2', 'a', 'b', 'varu', 'pakk', 'liim', 'kott', 'vl', 'vs', 'vkott', 'av', 'apk', 'aw', 'ah'];
     $('lad').querySelector(`[data-v="${st.lad}"]`).classList.add('on');
 
     let q = {};
@@ -119,13 +124,29 @@ export default {
       st.akesk = $('akesk').checked; save('plaadid', st);
       const av = val($('av')) || 30;
       const perSide = (L) => (L ? Math.max(2, Math.ceil(L / av)) + (st.akesk ? 1 : 0) : 0);
-      const perTile = (perSide(a) + perSide(b));          // 4 külge × ½
-      const plaate = plaat ? Math.ceil(m2 / plaat) : 0;   // varuplaatidele ankruid ei lähe
-      const ankruid = Math.ceil(perTile * plaate * 1.05); // +5% katki/kadu
       const apk = val($('apk'));
-      $('outA').innerHTML =
-        line('Ankruid plaadi kohta', perTile ? perTile + ' tk' : '—') +
-        line('Plaate (ilma varuta)', plaate + ' tk') +
+      const W = val($('aw')), H = val($('ah'));       // mm
+      let ankruid, rows;
+      if (W && H && a && b) {
+        // Täpne: plaatide ruudustik, ankrud ainult plaatide vahelistel vuukidel
+        const A = a * 10, B = b * 10;
+        const segs = (len, size) => { const f = Math.floor(len / size), r = Math.round(len - f * size); return [...Array(f).fill(size), ...(r > 5 ? [r] : [])]; };
+        const colW = segs(W, A), rowH = segs(H, B);
+        const perSeg = (L) => (L < 150 ? 1 : Math.max(2, Math.ceil(L / (av * 10)))) + (st.akesk ? 1 : 0);
+        const vert = (colW.length - 1) * rowH.reduce((x, h) => x + perSeg(h), 0);
+        const hor = (rowH.length - 1) * colW.reduce((x, w) => x + perSeg(w), 0);
+        const net = vert + hor;
+        ankruid = Math.ceil(net * 1.05);
+        rows = line('Plaate (sh lõigatud)', `${colW.length * rowH.length} tk (${colW.length} × ${rowH.length})`) +
+          line('Viimane tulp / rida', `${colW[colW.length - 1]} / ${rowH[rowH.length - 1]} mm`) +
+          line('Ankruid vuukidel', net + ' tk');
+      } else {
+        const perTile = perSide(a) + perSide(b);           // 4 külge × ½
+        const plaate = plaat ? Math.ceil(m2 / plaat) : 0;   // varuplaatidele ankruid ei lähe
+        ankruid = Math.ceil(perTile * plaate * 1.05);
+        rows = line('Ankruid plaadi kohta', perTile ? perTile + ' tk' : '—') + line('Plaate (pinna järgi)', plaate + ' tk');
+      }
+      $('outA').innerHTML = rows +
         line('Ankruid kokku (+5%)', ankruid + ' tk', true) +
         line('Pakke', apk ? Math.ceil(ankruid / apk) + ' pk à ' + apk : '—', true);
       q = { ankruid, apakke: apk ? Math.ceil(ankruid / apk) : 0, apk, tk, pakke, kotte: kott ? Math.ceil(liimKg / kott) : 0, kott, vpk: vk ? Math.ceil(vuukKg / vk) : 0, vk, a, b, m2 };
