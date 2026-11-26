@@ -1,0 +1,9 @@
+{
+  "name": "KROX tööriistad",
+  "short_name": "KROX",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#16181c",
+  "theme_color": "#16181c",
+  "lang": "et"
+}
