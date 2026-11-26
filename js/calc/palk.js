@@ -115,7 +115,9 @@ export default {
         (pr ? line('+ Päevaraha', eur(pr)) + line('Kätte kokku', eur(round2(x.neto + pr)), true) : '') +
         line('Sotsiaalmaks (tööandja)', eur(x.sots)) +
         line('Töötuskindlustus (tööandja)', eur(x.tkAndja)) +
-        line(pr ? 'Tööandja kulu kokku (koos päevarahaga)' : 'Tööandja kogukulu', eur(round2(x.kulu + pr)), true);
+        line(pr ? 'Tööandja kulu kokku (koos päevarahaga)' : 'Tööandja kogukulu', eur(round2(x.kulu + pr)), true) +
+        line('Maksud ja maksed kokku (kulu − kätte)', eur(round2(x.kulu - x.neto))) +
+        line('Kätte jääb kulust', (x.kulu + pr ? Math.round(((x.neto + pr) / (x.kulu + pr)) * 1000) / 10 : 0).toString().replace('.', ',') + ' %');
     };
 
     seg(modeBox, (v) => { st.mode = v; calc(); });
