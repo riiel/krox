@@ -6,7 +6,7 @@ import * as paevik from '../paevik/store.js';
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 // Ühiku kuvamine õiges käändes: 1 kott, 4 kotti
 const yk = (i) => { const k = parseFloat(String(i.kogus).replace(',', '.')); const many = k && k !== 1; return i.yhik === 'kott' && many ? 'kotti' : i.yhik === 'rull' && many ? 'rulli' : (i.yhik || ''); };
-const KUST = { pood: { nimi: 'Poest', ico: 'ostukorv' }, ladu: { nimi: 'Laost', ico: 'ladu' }, kodu: { nimi: 'Kodust', ico: 'kodu' } };
+const KUST = { pood: { nimi: 'Poest', ico: 'ostukorv' }, ladu: { nimi: 'Laost', ico: 'ladu' }, kodu: { nimi: 'Kodust', ico: 'kodu' }, muu: { nimi: 'Muu', ico: 'inimesed' } };
 const kustOf = (i) => i.kust || 'pood';
 const YHIKUD = ['', 'tk', 'pk', 'kott', 'm²', 'jm', 'l', 'kg', 'rull', 'kmpl'];
 
