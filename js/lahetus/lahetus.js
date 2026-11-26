@@ -155,6 +155,12 @@ function vorm(el, id) {
   upd();
 }
 
+// Kas brauser lubab Word-faili otse jagada (Chrome/Samsung veebis tavaliselt mitte, Android-äpis jah)
+function canShareDocx() {
+  try { return !!navigator.canShare?.({ files: [new File(['x'], 'a.docx', { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' })] }); }
+  catch { return false; }
+}
+
 // ---------- vaade: korraldus + raamatupidamine ----------
 function vaade(el, id) {
   const x = get(id);
@@ -170,11 +176,13 @@ function vaade(el, id) {
       <a class="back" href="#/lahetus">← Lähetused</a>
       <h2 style="margin-top:6px">1. Korraldus (allkirjastamiseks)</h2>
       <div class="actions" style="margin-top:0">
-        <button class="btn primary" id="word">📄 Jaga Word-failina</button>
+        <button class="btn primary" id="word">${canShareDocx() ? '📄 Jaga Word-failina' : '📄 Salvesta Word-fail'}</button>
         <button class="btn" id="pdf">🖨 PDF</button>
       </div>
       <div class="actions" style="margin-top:8px"><a class="btn" href="#/lahetus/muuda/${x.id}">✎ Muuda</a></div>
-      <p class="note" id="wmsg">„Jaga Word-failina“ avab jagamise menüü: vali <b>Drive</b> ja kaust. Seal saad faili Dokobitis allkirjastada.</p>
+      <p class="note" id="wmsg">${canShareDocx()
+        ? 'Avaneb jagamise menüü: vali <b>Drive</b> ja kaust.'
+        : 'Fail salvestub kausta „Allalaaditud“. Drive\'i panekuks: Drive → <b>+</b> → <b>Laadi üles</b> → Allalaaditud → vali fail.'}</p>
 
       <h2>2. Raamatupidajale</h2>
       <pre class="rp" id="rp">${esc(rp)}</pre>
@@ -242,7 +250,7 @@ function vaade(el, id) {
       ...x.lisad.split('\n').filter((l) => l.trim()).map((l) => ({ type: 'bullet', runs: l.trim() })),
     ]);
     const res = await shareFile(blob, fname('LÄHETUSE KORRALDUS') + '.docx');
-    if (res === 'downloaded') $('wmsg').textContent = 'Fail laaditi alla („Allalaaditud“). Lae see Drive\'i kausta.';
+    if (res === 'downloaded') $('wmsg').innerHTML = '✓ Salvestatud kausta „Allalaaditud“. Drive\'i panekuks: Drive → <b>+</b> → <b>Laadi üles</b> → vali fail.';
   };
   $('copy').onclick = async () => {
     try { await navigator.clipboard.writeText(rp); msg('Kopeeritud. Kleebi raamatupidamise dokumenti.'); }
