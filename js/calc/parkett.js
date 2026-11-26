@@ -21,7 +21,7 @@ export default {
     el.innerHTML = `
       <div class="card">
         <div class="row">
-          <div><label>Laius vuukide vahel (mm)</label><input id="W" inputmode="decimal" placeholder="2670" value="${st.W}"></div>
+          <div><label>Laius vuukide vahel (mm)</label><input id="W" inputmode="decimal" placeholder="nt 2670" value="${st.W}"></div>
           <div><label>Laius teisest otsast (mm)</label><input id="W2" inputmode="decimal" placeholder="valikuline" value="${st.W2}"></div>
         </div>
         <div class="row">
