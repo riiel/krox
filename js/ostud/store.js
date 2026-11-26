@@ -15,12 +15,12 @@ export function getList(d, nimi) {
 }
 
 // Lisa asi; kui sama nimi ja ühik juba ostmata kujul olemas, liida kogus juurde
-export function addItem(l, { nimi, kogus = '', yhik = '' }) {
+export function addItem(l, { nimi, kogus = '', yhik = '', kust = 'pood' }) {
   nimi = nimi.trim();
   if (!nimi) return;
-  const same = l.items.find((i) => !i.ostetud && i.nimi.toLowerCase() === nimi.toLowerCase() && (i.yhik || '') === (yhik || ''));
+  const same = l.items.find((i) => !i.ostetud && i.nimi.toLowerCase() === nimi.toLowerCase() && (i.yhik || '') === (yhik || '') && (i.kust || 'pood') === kust);
   if (same && kogus !== '' && same.kogus !== '') same.kogus = String(Math.round((n(same.kogus) + n(kogus)) * 100) / 100).replace('.', ',');
-  else if (!same) l.items.push({ id: uid(), nimi, kogus: String(kogus).replace('.', ','), yhik, ostetud: false });
+  else if (!same) l.items.push({ id: uid(), nimi, kogus: String(kogus).replace('.', ','), yhik, kust, ostetud: false });
 }
 
 // Kasutatakse kalkulaatoritest: lisa mitu asja objekti nimekirja

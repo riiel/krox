@@ -204,3 +204,12 @@ input[type=time] { padding: 12px 8px; }
 .seg.tyyp { display: grid; grid-template-columns: repeat(4, 1fr); }
 .seg.tyyp button { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: .75rem; padding: 10px 2px; }
 .seg.tyyp button .ico { width: 22px; height: 22px; margin: 0; }
+.seg.kust { margin-bottom: 10px; }
+.seg.kust button { display: flex; align-items: center; justify-content: center; gap: 6px; }
+.seg.kust button .ico { margin: 0; }
+h2.grp { display: flex; align-items: center; gap: 8px; }
+h2.grp .ico { width: 18px; height: 18px; color: var(--accent); margin: 0; }
+.ost.editing { grid-template-columns: 1fr 56px 56px 70px auto auto; }
+.ost.editing { grid-template-columns: 1fr 1fr 1.3fr auto auto; }
+.ost.editing [data-f=nimi] { grid-column: 1 / -1; }
+.ost.editing .btn.danger { padding: 6px 10px; } .ost.editing .btn.danger .ico { margin: 0; }
