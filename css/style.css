@@ -154,3 +154,4 @@ input[type=time] { padding: 12px 8px; }
 .wall-head { margin: 10px 0 0; } .wall-head label { margin: 0; }
 .wall .wn { color: var(--muted); text-align: center; }
 .wall input { padding: 10px 8px; }
+.mini { display: flex; gap: 6px; } .mini .btn { padding: 6px 10px; }

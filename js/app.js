@@ -8,9 +8,10 @@ import seaded from './calc/seaded.js';
 import paevik from './paevik/paevik.js';
 import lahetus from './lahetus/lahetus.js';
 import kulud from './kulud/kulud.js';
+import kytus from './kytus/kytus.js';
 
 const tools = [palk, km, pind, plaadid, parkett];
-const all = [paevik, kulud, lahetus, ...tools, seaded];
+const all = [paevik, kulud, lahetus, kytus, ...tools, seaded];
 const app = document.getElementById('app');
 
 const tile = (t, wide = false) => `
@@ -22,7 +23,7 @@ const tile = (t, wide = false) => `
 
 function home() {
   app.innerHTML = `
-    <div class="grid">${tile(paevik, true)}${tile(kulud, true)}${tile(lahetus, true)}</div>
+    <div class="grid">${tile(paevik, true)}${tile(kulud, true)}${tile(lahetus, true)}${tile(kytus, true)}</div>
     <h2>Kalkulaatorid</h2>
     <div class="grid">${tools.map((t) => tile(t)).join('')}</div>`;
 }
