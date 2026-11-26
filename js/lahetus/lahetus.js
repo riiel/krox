@@ -1,5 +1,6 @@
 // Lähetused: nimekiri, vorm, korraldus (PDF allkirjastamiseks) ja raamatupidamise fail
 import * as c from './calc.js';
+import { docx, shareFile } from '../docx.js';
 
 const KEY = 'krox.lahetused';
 const SEADED = 'krox.lahetus.seaded';
@@ -169,10 +170,11 @@ function vaade(el, id) {
       <a class="back" href="#/lahetus">← Lähetused</a>
       <h2 style="margin-top:6px">1. Korraldus (allkirjastamiseks)</h2>
       <div class="actions" style="margin-top:0">
-        <button class="btn primary" id="pdf">🖨 Salvesta PDF</button>
-        <a class="btn" href="#/lahetus/muuda/${x.id}">✎ Muuda</a>
+        <button class="btn primary" id="word">📄 Jaga Word-failina</button>
+        <button class="btn" id="pdf">🖨 PDF</button>
       </div>
-      <p class="note">Vali printeriks <b>Salvesta PDF-ina</b>. Siis lae PDF Drive'i ja allkirjasta Dokobitis.</p>
+      <div class="actions" style="margin-top:8px"><a class="btn" href="#/lahetus/muuda/${x.id}">✎ Muuda</a></div>
+      <p class="note" id="wmsg">„Jaga Word-failina“ avab jagamise menüü: vali <b>Drive</b> ja kaust. Seal saad faili Dokobitis allkirjastada.</p>
 
       <h2>2. Raamatupidajale</h2>
       <pre class="rp" id="rp">${esc(rp)}</pre>
@@ -219,18 +221,36 @@ function vaade(el, id) {
     window.print();
     setTimeout(() => (document.title = old), 1000);
   };
+  $('word').onclick = async () => {
+    const vah = [];
+    if (korgePaevi && x.korge !== x.madal) vah.push({ type: 'sub', runs: `${madalPaevi ? 'Esimesed ' : ''}${korgePaevi} päeva: ${x.korge} €/päev` });
+    if (madalPaevi) vah.push({ type: 'sub', runs: `${korgePaevi ? 'Järgnevad ' : ''}${madalPaevi} päeva: ${x.madal} €/päev` });
+    const kv = (k, v) => ({ type: 'bullet', runs: [{ t: k + ' ', b: true }, { t: v }] });
+    const blob = docx([
+      { type: 'bullet', runs: [{ t: `${x.firma.toUpperCase()} LÄHETUSE KORRALDUS nr ${x.nr}`, b: true }] },
+      kv('Kuupäev:', c.kp(x.kuupaev)),
+      kv('Lähetatav:', x.lahetatav),
+      kv('Sihtkoht:', x.sihtkoht),
+      kv('Ajavahemik:', c.vahemikud(x.perioodid)),
+      kv('Lähetuse kestus:', `${r.paevi} päeva`),
+      { type: 'gap' },
+      { type: 'p', runs: [{ t: 'Eesmärk: ', b: true }, { t: x.eesmark }] },
+      { type: 'p', runs: [{ t: 'Kulude hüvitamine:', b: true }] },
+      { type: 'bullet', runs: 'Maksta välislähetuse päevaraha vastavalt seadusega lubatud piirmääradele:' },
+      ...vah,
+      { type: 'bullet', runs: [{ t: `Päevaraha kokku: ${r.kokku} €`, b: true }] },
+      ...x.lisad.split('\n').filter((l) => l.trim()).map((l) => ({ type: 'bullet', runs: l.trim() })),
+    ]);
+    const res = await shareFile(blob, fname('LÄHETUSE KORRALDUS') + '.docx');
+    if (res === 'downloaded') $('wmsg').textContent = 'Fail laaditi alla („Allalaaditud“). Lae see Drive\'i kausta.';
+  };
   $('copy').onclick = async () => {
     try { await navigator.clipboard.writeText(rp); msg('Kopeeritud. Kleebi raamatupidamise dokumenti.'); }
     catch { const t = document.createRange(); t.selectNodeContents($('rp')); getSelection().removeAllRanges(); getSelection().addRange(t); msg('Tekst on valitud, vajuta „Kopeeri“.'); }
   };
   $('share').onclick = async () => {
-    const file = new File([rp], fname('Raamatupidamine') + '.txt', { type: 'text/plain' });
-    try {
-      if (navigator.canShare?.({ files: [file] })) { await navigator.share({ files: [file], title: file.name }); return; }
-    } catch (e) { if (e.name === 'AbortError') return; }
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(file); a.download = file.name; a.click();
-    msg('Fail laaditi alla. Lae see Drive\'i.');
+    const res = await shareFile(new Blob([rp], { type: 'text/plain' }), fname('Raamatupidamine') + '.txt');
+    if (res === 'downloaded') msg('Fail laaditi alla. Lae see Drive\'i.');
   };
 }
 
