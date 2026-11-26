@@ -3,9 +3,10 @@ import palk from './calc/palk.js';
 import km from './calc/km.js';
 import pind from './calc/pind.js';
 import plaadid from './calc/plaadid.js';
+import parkett from './calc/parkett.js';
 import seaded from './calc/seaded.js';
 
-const tools = [palk, km, pind, plaadid];
+const tools = [palk, km, pind, plaadid, parkett];
 const all = [...tools, seaded];
 const app = document.getElementById('app');
 
