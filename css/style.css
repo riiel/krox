@@ -179,3 +179,19 @@ input[type=time] { padding: 12px 8px; }
 .btn .ico, .seg .ico, .backup-hint .ico, .note .ico, .entry-sub .ico { width: 1.15em; height: 1.15em; margin-right: 7px; vertical-align: -0.2em; }
 .seg button.on .ico { color: var(--accent-ink); }
 .mini .btn .ico { margin-right: 0; }
+
+/* Ostunimekiri */
+.list-pick select { font-weight: 600; margin-bottom: 12px; }
+.add-ost input#nimi { margin-bottom: 8px; }
+.add-row { display: grid; grid-template-columns: 1fr 90px auto; gap: 8px; }
+.add-row .btn { padding: 0 14px; }
+.ost-list { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; margin-top: 12px; }
+.ost { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-bottom: 1px solid var(--line); min-height: 54px; }
+.ost:last-child { border-bottom: 0; }
+.chk { width: 28px; height: 28px; flex: none; border-radius: 8px; border: 2px solid var(--accent); background: transparent; color: var(--accent-ink); font-weight: 800; font-size: 1rem; padding: 0; }
+.ost.done .chk { background: var(--accent); }
+.ost-nimi { flex: 1; min-width: 0; }
+.ost-kogus { color: var(--accent); font-weight: 600; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.ost.done .ost-nimi, .ost.done .ost-kogus { color: var(--muted); text-decoration: line-through; }
+.ost.editing { display: grid; grid-template-columns: 1fr 64px 64px auto auto; gap: 6px; }
+.ost.editing input, .ost.editing select { padding: 8px 6px; font-size: .95rem; }

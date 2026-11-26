@@ -1,5 +1,8 @@
 // Plaatide, liimi ja vuugitäite kalkulaator
 import { num, val, line, seg, load, save } from '../util.js';
+import { ico } from '../icons.js';
+import { addMany } from '../ostud/store.js';
+import * as paevik from '../paevik/store.js';
 
 export default {
   id: 'plaadid',
@@ -52,12 +55,25 @@ export default {
         </div>
       </div>
       <div class="result" id="outV"></div>
-      <p class="note">Vuugitäite valem: (A+B)/(A×B) × vuugi laius × sügavus × 1,6 kg/dm³ (+10% varu). Tsementvuugi tihedus on ligikaudne, epoksü puhul vaata tootja tabelit.</p>`;
+      <p class="note">Vuugitäite valem: (A+B)/(A×B) × vuugi laius × sügavus × 1,6 kg/dm³ (+10% varu). Tsementvuugi tihedus on ligikaudne, epoksü puhul vaata tootja tabelit.</p>
+
+      <h2>Ostunimekirja</h2>
+      <div class="card">
+        <label class="check"><input type="checkbox" id="o_p" checked> Plaadid</label>
+        <label class="check"><input type="checkbox" id="o_l" checked> Plaatimisliim</label>
+        <label class="check"><input type="checkbox" id="o_v" checked> Vuugitäide</label>
+        <label>Objekt</label>
+        <input id="o_obj" list="o_objList" placeholder="nt Tamme 5 vannituba" value="${(paevik.objektid().slice(-1)[0] || '').replace(/"/g, '&quot;')}">
+        <datalist id="o_objList">${paevik.objektid().map((o) => `<option value="${o.replace(/"/g, '&quot;')}">`).join('')}</datalist>
+        <button class="btn primary" id="toList" style="width:100%;margin-top:12px">${ico('ostukorv')}Lisa ostunimekirja</button>
+        <p class="note" id="o_msg"></p>
+      </div>`;
 
     const $ = (id) => el.querySelector('#' + id);
     const ids = ['m2', 'a', 'b', 'varu', 'pakk', 'liim', 'kott', 'vl', 'vs', 'vkott'];
     $('lad').querySelector(`[data-v="${st.lad}"]`).classList.add('on');
 
+    let q = {};
     const calc = () => {
       ids.forEach((id) => (st[id] = $(id).value));
       save('plaadid', st);
@@ -86,6 +102,18 @@ export default {
         line('Kulu', num(kgm2) + ' kg/m²') +
         line('Vuugitäidet kokku', num(vuukKg, 1) + ' kg') +
         line('Pakke', vk ? Math.ceil(vuukKg / vk) + ' pk' : '—', true);
+      q = { tk, pakke, kotte: kott ? Math.ceil(liimKg / kott) : 0, kott, vpk: vk ? Math.ceil(vuukKg / vk) : 0, vk, a, b, m2 };
+    };
+
+    $('toList').onclick = () => {
+      if (!q.m2) { $('o_msg').textContent = 'Sisesta enne pind.'; return; }
+      const items = [];
+      if ($('o_p').checked && (q.pakke || q.tk)) items.push(q.pakke ? { nimi: `Plaadid ${num(q.a)}×${num(q.b)} cm`, kogus: q.pakke, yhik: 'pk' } : { nimi: `Plaadid ${num(q.a)}×${num(q.b)} cm`, kogus: q.tk, yhik: 'tk' });
+      if ($('o_l').checked && q.kotte) items.push({ nimi: `Plaatimisliim ${num(q.kott)} kg`, kogus: q.kotte, yhik: 'kott' });
+      if ($('o_v').checked && q.vpk) items.push({ nimi: `Vuugitäide ${num(q.vk)} kg`, kogus: q.vpk, yhik: 'pk' });
+      if (!items.length) { $('o_msg').textContent = 'Midagi pole lisada.'; return; }
+      const l = addMany($('o_obj').value.trim() || 'Üldine', items);
+      $('o_msg').innerHTML = `✓ Lisatud ${items.length} rida nimekirja „${l.nimi.replace(/</g, '&lt;')}“. <a href="#/ostud" style="color:var(--accent)">Ava ostunimekiri →</a>`;
     };
 
     seg($('from'), (v) => {
