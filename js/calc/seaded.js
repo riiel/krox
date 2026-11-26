@@ -12,7 +12,7 @@ const fields = [
 ];
 
 export const DEFAULT_FIRMA = {
-  nimi: 'KROX OÜ', regkood: '', kmkr: 'EE102941724', aadress: 'Metsa tn 15a-65, 80024 Pärnu', iban: 'EE82 7700 7710 1252 7693', pank: 'LHV Pank',
+  nimi: 'KROX OÜ', regkood: '17404836', kmkr: 'EE102941724', aadress: 'Metsa tn 15a-65, 80024 Pärnu', iban: 'EE82 7700 7710 1252 7693', pank: 'LHV Pank',
   telefon: '+372 529 9715', email: 'krox.ou@gmail.com',
 };
 const firmaFields = [
