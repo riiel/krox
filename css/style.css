@@ -111,3 +111,27 @@ input[type=time] { padding: 12px 8px; }
 .logo-img { height: 34px; display: block; }
 .backup-hint { display: block; margin-top: 14px; border-color: #4d4228; color: var(--accent); font-size: .9rem; }
 
+
+/* Lähetus */
+.per { display: grid; grid-template-columns: 1fr 1fr 40px; gap: 8px; align-items: end; margin-bottom: 8px; }
+.per .x { padding: 12px 0; }
+.rp { white-space: pre-wrap; background: #0f0f11; border: 1px solid var(--line); border-radius: 10px; padding: 12px;
+  font-family: inherit; font-size: .9rem; line-height: 1.45; margin: 0; user-select: text; }
+.paber { background: #fff; color: #111; border-radius: 6px; padding: 26px 22px; font-size: 13.5px; line-height: 1.5; }
+.paber h3 { font-size: 15px; margin: 0 0 16px; }
+.paber .kv th { text-align: left; padding: 2px 12px 2px 0; white-space: nowrap; vertical-align: top; }
+.paber .kv td { padding: 2px 0; }
+.paber ul { padding-left: 22px; margin: 6px 0; }
+.paber ul ul { list-style: circle; }
+.paber .allkiri { margin-top: 40px; }
+.paber .muted { color: #777; font-size: 12px; }
+
+@media print {
+  @page { size: A4; margin: 20mm; }
+  html, body { background: #fff !important; }
+  .top, .no-print { display: none !important; }
+  main { max-width: none; padding: 0; margin: 0; }
+  .paber { padding: 0; font-size: 12pt; }
+  .paber h3 { font-size: 13pt; }
+}
+.per > div { min-width: 0; } .per input[type=date] { padding: 12px 8px; font-size: 1rem; }
