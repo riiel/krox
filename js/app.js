@@ -11,9 +11,10 @@ import lahetus from './lahetus/lahetus.js';
 import kulud from './kulud/kulud.js';
 import kytus from './kytus/kytus.js';
 import ostud from './ostud/ostud.js';
+import kalender, { tulemasHtml } from './kalender/kalender.js';
 
 const tools = [palk, km, pind, plaadid, parkett];
-const all = [paevik, ostud, kulud, lahetus, kytus, ...tools, seaded];
+const all = [paevik, kalender, ostud, kulud, lahetus, kytus, ...tools, seaded];
 const app = document.getElementById('app');
 
 const row = (t) => `
@@ -26,7 +27,8 @@ const chip = (t) => `<a class="nav-chip" href="#/${t.id}">${ico(t.icon, 'gold')}
 
 function home() {
   app.innerHTML = `
-    <div class="nav-list">${[paevik, ostud, kulud, lahetus, kytus].map(row).join('')}</div>
+    <div class="nav-list">${[paevik, kalender, ostud, kulud, lahetus, kytus].map(row).join('')}</div>
+    ${tulemasHtml()}
     <h2>Kalkulaatorid</h2>
     <div class="nav-chips">${tools.map(chip).join('')}</div>`;
 }

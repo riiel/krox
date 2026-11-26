@@ -195,3 +195,12 @@ input[type=time] { padding: 12px 8px; }
 .ost.done .ost-nimi, .ost.done .ost-kogus { color: var(--muted); text-decoration: line-through; }
 .ost.editing { display: grid; grid-template-columns: 1fr 64px 64px auto auto; gap: 6px; }
 .ost.editing input, .ost.editing select { padding: 8px 6px; font-size: .95rem; }
+
+/* Kalender */
+.day small.dots { letter-spacing: 1px; font-size: .8rem; line-height: .6; }
+.entry.ev { display: flex; gap: 12px; align-items: flex-start; }
+.entry.ev > .ico { width: 22px; height: 22px; margin-top: 2px; }
+.ev-date { color: var(--accent); font-weight: 600; margin-right: 4px; }
+.seg.tyyp { display: grid; grid-template-columns: repeat(4, 1fr); }
+.seg.tyyp button { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: .75rem; padding: 10px 2px; }
+.seg.tyyp button .ico { width: 22px; height: 22px; margin: 0; }
