@@ -6,10 +6,9 @@ import plaadid from './calc/plaadid.js';
 import parkett from './calc/parkett.js';
 import seaded from './calc/seaded.js';
 import paevik from './paevik/paevik.js';
-import arve from './arve/arve.js';
 
 const tools = [palk, km, pind, plaadid, parkett];
-const all = [paevik, arve, ...tools, seaded];
+const all = [paevik, ...tools, seaded];
 const app = document.getElementById('app');
 
 const tile = (t, wide = false) => `
@@ -21,7 +20,7 @@ const tile = (t, wide = false) => `
 
 function home() {
   app.innerHTML = `
-    <div class="grid">${tile(paevik, true)}${tile(arve, true)}</div>
+    <div class="grid">${tile(paevik, true)}</div>
     <h2>Kalkulaatorid</h2>
     <div class="grid">${tools.map((t) => tile(t)).join('')}</div>`;
 }

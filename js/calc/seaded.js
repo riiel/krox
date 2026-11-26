@@ -1,5 +1,5 @@
-// Seaded: firma andmed, maksumäärad, varukoopia
-import { val, rates, save, load, DEFAULT_RATES } from '../util.js';
+// Seaded: varukoopia, maksumäärad
+import { val, rates, save, DEFAULT_RATES } from '../util.js';
 import { exportAll, importFile, lastBackup } from '../backup.js';
 
 const fields = [
@@ -11,27 +11,13 @@ const fields = [
   ['km', 'Käibemaks (%)'],
 ];
 
-export const DEFAULT_FIRMA = {
-  nimi: 'KROX OÜ', regkood: '17404836', kmkr: 'EE102941724', aadress: 'Metsa tn 15a-65, 80024 Pärnu', iban: 'EE82 7700 7710 1252 7693', pank: 'LHV Pank',
-  telefon: '+372 529 9715', email: 'krox.ou@gmail.com',
-  swift: 'LHVBEE22', viivis: '0,05% päevas', tahtaeg: '7', viimaneArve: '1012',
-};
-const firmaFields = [
-  ['nimi', 'Nimi'], ['regkood', 'Registrikood'], ['kmkr', 'KMKR number'], ['aadress', 'Aadress'],
-  ['iban', 'Pangakonto (IBAN)'], ['pank', 'Pank'], ['swift', 'SWIFT/BIC'], ['telefon', 'Telefon'], ['email', 'E-post'],
-  ['viivis', 'Viivis (nt 0,05% päevas)'], ['tahtaeg', 'Maksetähtaeg (päeva)'], ['viimaneArve', 'Viimane arve number (enne äppi)'],
-];
-export const firma = () => load('firma', DEFAULT_FIRMA);
-
-const esc = (s) => String(s ?? '').replace(/"/g, '&quot;');
-
 export default {
   id: 'seaded',
   icon: '⚙',
   title: 'Seaded',
   desc: '',
   render(el) {
-    const r = rates(), f = firma();
+    const r = rates();
     const lb = lastBackup();
     el.innerHTML = `
       <h2>Varukoopia</h2>
@@ -45,13 +31,6 @@ export default {
         </div>
         <input type="file" id="file" accept=".json,application/json" hidden>
         <p class="note" id="bmsg"></p>
-      </div>
-
-      <h2>Firma andmed</h2>
-      <div class="card">
-        ${firmaFields.map(([k, t]) => `<label>${t}</label><input data-f="${k}" value="${esc(f[k])}">`).join('')}
-        <div style="margin-top:16px"><button class="btn primary" id="saveF">Salvesta</button></div>
-        <p class="note" id="fmsg">Neid andmeid kasutatakse arvetel ja pakkumistel.</p>
       </div>
 
       <h2>Maksumäärad</h2>
@@ -77,13 +56,6 @@ export default {
         alert(`Taastatud. Tööpäevikus on ${n} kirjet.`);
         location.hash = '#/';
       } catch (e) { $('bmsg').textContent = 'Viga: ' + e.message; }
-    };
-
-    $('saveF').onclick = () => {
-      const nf = {};
-      el.querySelectorAll('[data-f]').forEach((i) => (nf[i.dataset.f] = i.value.trim()));
-      save('firma', nf);
-      $('fmsg').textContent = 'Salvestatud.';
     };
 
     $('save').onclick = () => {
