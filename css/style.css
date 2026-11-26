@@ -135,3 +135,18 @@ input[type=time] { padding: 12px 8px; }
   .paber h3 { font-size: 13pt; }
 }
 .per > div { min-width: 0; } .per input[type=date] { padding: 12px 8px; font-size: 1rem; }
+
+/* Kulud */
+.tag { font-size: .75rem; padding: 3px 8px; border-radius: 20px; border: 1px solid var(--line); color: var(--muted); }
+.tag.ok { color: #7fd18b; border-color: #2c5a33; }
+.tag.wait { color: var(--accent); border-color: #4d4228; }
+.tag.bad { color: #ff7a7a; border-color: #5a2a2a; }
+.cam { display: block; text-align: center; padding: 18px; font-size: 1.1rem; }
+.entry.kulu { display: flex; gap: 12px; align-items: flex-start; }
+.entry.kulu img { width: 54px; height: 72px; object-fit: cover; border-radius: 6px; background: #222; flex: none; }
+.tsekk-pilt { display: block; max-width: 100%; max-height: 46vh; margin: 0 auto 6px; border-radius: 8px; }
+.km-head, .km-row { display: grid; grid-template-columns: 70px 1fr 1fr 40px; gap: 6px; align-items: center; }
+.km-head { color: var(--muted); font-size: .8rem; margin-bottom: 4px; }
+.km-row { margin-bottom: 6px; }
+.km-row input, .km-row select { padding: 10px 8px; }
+.btn:disabled { opacity: .5; }
