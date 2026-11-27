@@ -20,9 +20,9 @@ export default {
         <label>Pind (m²)</label>
         <div class="row">
           <input id="m2" inputmode="decimal" placeholder="nt 12,5" value="${st.m2}">
-          <div class="seg" id="from"><button data-v="porand">Põrand</button><button data-v="seinad">Seinad</button></div>
+          <div class="seg seg3" id="from"><button data-v="porand">Põrand</button><button data-v="seinad">Seinad</button><button data-v="koos">Koos</button></div>
         </div>
-        <p class="note" style="margin-top:6px">Nupud võtavad pinna ruutude kalkulaatorist.</p>
+        <p class="note" style="margin-top:6px" id="fromInfo">Nupud võtavad pinna ruutude kalkulaatorist.</p>
         <div class="row">
           <div><label>Plaadi laius (cm)</label><input id="a" inputmode="decimal" value="${st.a}"></div>
           <div><label>Plaadi pikkus (cm)</label><input id="b" inputmode="decimal" value="${st.b}"></div>
@@ -166,7 +166,9 @@ export default {
 
     seg($('from'), (v) => {
       const p = load('pind', {});
-      if (p[v] != null) $('m2').value = num(p[v]).replace(/\s/g, '');
+      const m = v === 'koos' ? (p.porand || 0) + (p.seinad || 0) : p[v];
+      if (m != null) $('m2').value = num(m).replace(/\s/g, '');
+      $('fromInfo').textContent = v === 'koos' ? `Põrand ${num(p.porand || 0)} m² + seinad ${num(p.seinad || 0)} m²` : 'Nupud võtavad pinna ruutude kalkulaatorist.';
       calc();
     });
     seg($('lad'), (v) => {
