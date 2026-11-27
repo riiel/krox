@@ -288,3 +288,11 @@ button.icon-btn { background: none; border: 0; color: var(--muted); }
 .lnk-btns { display: flex; gap: 6px; justify-content: flex-end; }
 .lnk-btns .btn .ico { margin: 0; }
 .seg.seg3 button { padding: 10px 4px; font-size: .85rem; }
+
+/* Skanner */
+.scan-wrap { position: fixed; inset: 0; z-index: 60; background: #000; display: flex; flex-direction: column; padding: calc(10px + env(safe-area-inset-top)) 12px calc(12px + env(safe-area-inset-bottom)); gap: 10px; }
+.scan-top { display: flex; justify-content: space-between; align-items: baseline; }
+.scan-top .note { margin: 0; }
+.scan-stage { flex: 1; min-height: 0; display: grid; place-items: center; }
+.scan-stage canvas { touch-action: none; border-radius: 6px; }
+.scan-act { margin-top: 0; }

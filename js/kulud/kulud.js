@@ -2,6 +2,7 @@
 import { ico } from '../icons.js';
 import * as db from './store.js';
 import { compress, toBase64, jpegToPdf } from './pilt.js';
+import { scan } from './skanner.js';
 import * as paevik from '../paevik/store.js';
 import { eur } from '../util.js';
 import { shareFile } from '../docx.js';
@@ -57,7 +58,8 @@ async function list(el) {
   const $ = (q) => el.querySelector('#' + q);
   const pick = async (input) => {
     const f = input.files[0]; if (!f) return;
-    const { blob, w, h } = await compress(f);
+    const scanned = await scan(f);
+    const { blob, w, h } = await compress(scanned);
     pending = { pilt: blob, w, h };
     location.hash = '#/kulud/uus';
   };
