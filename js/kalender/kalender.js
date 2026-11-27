@@ -69,6 +69,19 @@ export function tulemas(paevi = 14, max = 3) {
   const end = iso(new Date(Date.now() + paevi * 864e5));
   return [...load(), ...autoRange(t, end)].filter((e) => e.kuupaev >= t && e.kuupaev <= end).sort((a, b) => sortKey(a).localeCompare(sortKey(b))).slice(0, max);
 }
+// Päise kompaktne plokk: lähim sündmus (+ mitu veel tulemas)
+export function headerHtml() {
+  const l = tulemas(14, 9);
+  if (!l.length) return '';
+  const e = l[0];
+  const t = today(), h = iso(new Date(Date.now() + 864e5));
+  const when = (e.kuupaev === t ? 'Täna' : e.kuupaev === h ? 'Homme' : kp(e.kuupaev)) + (e.aeg ? ' ' + e.aeg : '');
+  return `<a class="hdr-next${e.kuupaev === t ? ' today' : ''}" href="#/kalender/e/${e.id}">
+    ${ico(icoOf(e))}
+    <span class="hn-text"><span class="hn-when">${when}${l.length > 1 ? ` <em>+${l.length - 1}</em>` : ''}</span><span class="hn-title">${esc(e.pealkiri)}</span></span>
+  </a>`;
+}
+
 export function tulemasHtml() {
   const l = tulemas();
   if (!l.length) return '';

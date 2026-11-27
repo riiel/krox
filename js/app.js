@@ -13,7 +13,7 @@ import kulud from './kulud/kulud.js';
 import kytus from './kytus/kytus.js';
 import ostud from './ostud/ostud.js';
 import toorist from './toorist/toorist.js';
-import kalender, { tulemasHtml } from './kalender/kalender.js';
+import kalender, { headerHtml } from './kalender/kalender.js';
 
 const tools = [palk, km, pind, plaadid, parkett, varv];
 const all = [paevik, kalender, ostud, toorist, kulud, lahetus, kytus, ...tools, seaded];
@@ -29,13 +29,13 @@ const chip = (t) => `<a class="nav-chip" href="#/${t.id}">${ico(t.icon, 'gold')}
 
 function home() {
   app.innerHTML = `
-    <div class="nav-list">${[paevik, kalender, ostud, toorist, kulud, lahetus, kytus].map(row).join('')}</div>
-    ${tulemasHtml()}
-    <h2>Kalkulaatorid</h2>
+    <div class="nav-list home">${[paevik, kalender, ostud, toorist, kulud, lahetus, kytus].map(row).join('')}</div>
+    <h2 class="home-h">Kalkulaatorid</h2>
     <div class="nav-chips">${tools.map(chip).join('')}</div>`;
 }
 
 function route() {
+  document.getElementById('hdrNext').innerHTML = headerHtml();
   const [path, qs = ''] = location.hash.replace(/^#\/?/, '').split('?');
   const [id, ...rest] = path.split('/').filter(Boolean);
   const q = Object.fromEntries(new URLSearchParams(qs));

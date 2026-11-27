@@ -237,3 +237,27 @@ h2.grp .ico { width: 18px; height: 18px; color: var(--accent); margin: 0; }
 .koht-grid button .ico { width: 22px; height: 22px; }
 .koht-grid button.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
 .hist div { padding: 4px 0; font-size: .9rem; } .hist span { color: var(--muted); margin-right: 8px; font-variant-numeric: tabular-nums; }
+
+/* Päis: lähim sündmus logo kõrval */
+.top { gap: 10px; padding-top: calc(8px + env(safe-area-inset-top)); padding-bottom: 8px; }
+.logo-img { height: 30px; }
+.hdr-slot { flex: 1; min-width: 0; display: flex; justify-content: flex-end; }
+.hdr-next { display: flex; align-items: center; gap: 8px; min-width: 0; max-width: 100%; padding: 6px 10px; border: 1px solid var(--line);
+  border-radius: 10px; background: var(--card); }
+.hdr-next > .ico { width: 18px; height: 18px; color: var(--accent); }
+.hdr-next.today { border-color: var(--accent); }
+.hn-text { display: flex; flex-direction: column; min-width: 0; line-height: 1.2; }
+.hn-when { font-size: .7rem; color: var(--accent); font-weight: 600; white-space: nowrap; }
+.hn-when em { font-style: normal; color: var(--muted); font-weight: 400; }
+.hn-title { font-size: .8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.icon-btn { padding: 4px 0 4px 4px; }
+
+/* Kompaktne avaleht */
+main { padding-top: 12px; }
+.nav-list.home .nav-row { padding: 9px 12px; gap: 12px; }
+.nav-list.home .nav-row > .ico { width: 21px; height: 21px; }
+.nav-list.home .nr-text .t { font-size: .95rem; }
+.nav-list.home .nr-text .d { font-size: .75rem; }
+.home-h { margin: 14px 0 8px; }
+.nav-chip { padding: 10px 12px; }
+main { padding-bottom: 28px; }
