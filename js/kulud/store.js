@@ -26,7 +26,7 @@ export const remove = (id) => tx('readwrite', (s) => s.delete(id));
 
 // PIN serveri funktsioonide jaoks
 export const pin = () => { try { return localStorage.getItem('krox.pin') || ''; } catch { return ''; } };
-export const setPin = (p) => { try { localStorage.setItem('krox.pin', p); } catch { /* */ } };
+export const setPin = (p) => { try { localStorage.setItem('krox.pin', String(p).trim()); } catch { /* */ } };
 
 export async function api(path, body) {
   const r = await fetch('/api/' + path, {

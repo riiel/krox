@@ -3,9 +3,9 @@ const crypto = require('crypto');
 
 // Lihtne kaitse: äpp saadab PIN-i päises, mis peab klappima Verceli seadistuses oleva APP_PIN-iga
 function checkPin(req, res) {
-  const pin = process.env.APP_PIN;
+  const pin = String(process.env.APP_PIN || '').trim();
   if (!pin) { res.status(500).json({ error: 'APP_PIN pole Vercelis seadistatud' }); return false; }
-  const got = req.headers['x-krox-pin'] || '';
+  const got = String(req.headers['x-krox-pin'] || '').trim();
   const a = Buffer.from(String(got)), b = Buffer.from(String(pin));
   if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) { res.status(401).json({ error: 'Vale PIN' }); return false; }
   return true;

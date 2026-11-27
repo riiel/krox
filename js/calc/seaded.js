@@ -25,7 +25,7 @@ export default {
       <h2>Ühendused (Merit, tšekkide lugemine)</h2>
       <div class="card">
         <label>PIN (sama mis Vercelis APP_PIN)</label>
-        <input id="pin" type="password" inputmode="numeric" autocomplete="off" value="${pin() ? '••••' : ''}">
+        <input id="pin" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" value="${pin() ? '••••' : ''}">
         <div class="actions" style="margin-top:10px">
           <button class="btn primary" id="savePin">Salvesta PIN</button>
           <button class="btn" id="test">Kontrolli Meritit</button>
