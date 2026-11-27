@@ -215,3 +215,25 @@ h2.grp .ico { width: 18px; height: 18px; color: var(--accent); margin: 0; }
 .ost.editing .btn.danger { padding: 6px 10px; } .ost.editing .btn.danger .ico { margin: 0; }
 .seg.kust button { font-size: .85rem; padding: 10px 4px; gap: 5px; }
 .row, .row3 { align-items: end; }
+
+/* Tööriistad */
+.chips { display: flex; gap: 6px; overflow-x: auto; margin-top: 10px; padding-bottom: 2px; }
+.chips button { flex: none; border: 1px solid var(--line); background: var(--card); color: var(--muted); border-radius: 20px; padding: 7px 12px; font-size: .85rem; }
+.chips button.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+.tool-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+.tool-row:last-child { border-bottom: 0; }
+.tool-row .thumb { width: 44px; height: 44px; flex: none; border-radius: 8px; background: #0f0f11; display: grid; place-items: center; overflow: hidden; color: var(--muted); }
+.tool-row .thumb img { width: 100%; height: 100%; object-fit: cover; }
+.tool-row .thumb .ico { width: 20px; height: 20px; }
+.tnr { color: var(--accent); font-weight: 700; margin-right: 4px; }
+.koht .ico { width: 20px; height: 20px; color: var(--muted); }
+.koht.k-kadunud .ico { color: #ff7a7a; } .koht.k-laenatud .ico, .koht.k-remont .ico { color: var(--accent); }
+.tool-photo { display: block; border: 1px dashed var(--line); border-radius: var(--radius); min-height: 120px; overflow: hidden; }
+.tool-photo #ph { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 120px; color: var(--muted); }
+.tool-photo #ph .ico { width: 30px; height: 30px; }
+.tool-photo img { width: 100%; max-height: 260px; object-fit: contain; display: block; background: #0f0f11; }
+.koht-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.koht-grid button { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 4px; border: 1px solid var(--line); background: var(--card); color: var(--muted); border-radius: 10px; font-size: .85rem; }
+.koht-grid button .ico { width: 22px; height: 22px; }
+.koht-grid button.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+.hist div { padding: 4px 0; font-size: .9rem; } .hist span { color: var(--muted); margin-right: 8px; font-variant-numeric: tabular-nums; }
