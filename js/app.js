@@ -7,6 +7,7 @@ import parkett from './calc/parkett.js';
 import varv from './calc/varv.js';
 import seaded from './calc/seaded.js';
 import { ico } from './icons.js';
+import { openLinks } from './lingid.js';
 import paevik from './paevik/paevik.js';
 import lahetus from './lahetus/lahetus.js';
 import kulud from './kulud/kulud.js';
@@ -52,5 +53,7 @@ function route() {
 }
 
 window.addEventListener('hashchange', route);
-document.querySelector('.icon-btn').innerHTML = ico('seaded');
+document.getElementById('gearBtn').innerHTML = ico('seaded');
+document.getElementById('lnkBtn').innerHTML = ico('link');
+document.getElementById('lnkBtn').onclick = openLinks;
 route();
