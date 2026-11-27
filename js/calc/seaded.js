@@ -22,13 +22,20 @@ export default {
     const r = rates();
     const lb = lastBackup();
     el.innerHTML = `
-      <h2>Ühendused (Merit, tšekkide lugemine)</h2>
+      <h2>Tšekid</h2>
+      <div class="card">
+        <label>Kuhu tšekid saata</label>
+        <div class="seg" id="siht"><button data-v="costpocket">CostPocket (e-post)</button><button data-v="merit">Merit (vajab Pro)</button></div>
+        <p class="note">CostPocket: tšekk läheb e-kirjaga sinu CostPocketi aadressile ja sealt Meritisse. Merit otse vajab Merit Aktiva Pro või Premium paketti.</p>
+      </div>
+
+      <h2>Ühendused</h2>
       <div class="card">
         <label>PIN (sama mis Vercelis APP_PIN)</label>
         <input id="pin" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" value="${pin() ? '••••' : ''}">
         <div class="actions" style="margin-top:10px">
           <button class="btn primary" id="savePin">Salvesta PIN</button>
-          <button class="btn" id="test">Kontrolli Meritit</button>
+          <button class="btn" id="test">Kontrolli ühendust</button>
         </div>
         <p class="note" id="pmsg"></p>
       </div>
@@ -60,8 +67,18 @@ export default {
 
     $('pin').onfocus = () => { if ($('pin').value === '••••') $('pin').value = ''; };
     $('savePin').onclick = () => { const v = $('pin').value.trim(); if (v && v !== '••••') { setPin(v); $('pmsg').textContent = 'PIN salvestatud.'; } };
+    const sihtNow = () => { try { return localStorage.getItem('krox.tsekid.siht') || 'costpocket'; } catch { return 'costpocket'; } };
+    el.querySelectorAll('#siht button').forEach((b) => {
+      b.classList.toggle('on', b.dataset.v === sihtNow());
+      b.onclick = () => { try { localStorage.setItem('krox.tsekid.siht', b.dataset.v); } catch { /* */ } el.querySelectorAll('#siht button').forEach((x) => x.classList.toggle('on', x === b)); };
+    });
     $('test').onclick = async () => {
       $('pmsg').textContent = 'Kontrollin…';
+      if (sihtNow() === 'costpocket') {
+        try { await api('costpocket', { failinimi: 'test.txt', base64: btoa('KROX test'), tyyp: 'text/plain', kirjeldus: 'Test KROX äpist – võib kustutada.' }); $('pmsg').textContent = '✓ Testkiri saadetud CostPocketisse.'; }
+        catch (e) { $('pmsg').textContent = '✗ ' + e.message; }
+        return;
+      }
       try {
         const r = await api('merit', { action: 'taxes' });
         const pcts = r.taxes.map((t) => t.pct).filter((p) => p != null);

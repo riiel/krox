@@ -13,8 +13,11 @@ const kp = (s) => (s ? s.split('-').reverse().join('.') : '');
 let month = paevik.today().slice(0, 7);
 let pending = null; // värskelt pildistatud tšekk, mida pole veel salvestatud
 
-const status = (k) => k.merit === 'ok' ? '<span class="tag ok">Meritis</span>'
-  : k.merit === 'viga' ? '<span class="tag bad">Meriti viga</span>' : '<span class="tag wait">saatmata</span>';
+// Kuhu tšekid saata: 'costpocket' (e-postiga) või 'merit' (vajab Meriti Pro paketti)
+export const siht = () => { try { return localStorage.getItem('krox.tsekid.siht') || 'costpocket'; } catch { return 'costpocket'; } };
+const SIHT = () => (siht() === 'merit' ? { nimi: 'Merit', sees: 'Meritis', kuhu: 'Meritisse' } : { nimi: 'CostPocket', sees: 'CostPocketis', kuhu: 'CostPocketisse' });
+const status = (k) => k.merit === 'ok' ? `<span class="tag ok">${k.saadetud || 'Meritis'}</span>`
+  : k.merit === 'viga' ? '<span class="tag bad">saatmise viga</span>' : '<span class="tag wait">saatmata</span>';
 
 // ---------- nimekiri ----------
 async function list(el) {
@@ -31,7 +34,7 @@ async function list(el) {
     <label class="btn" style="display:block;text-align:center;margin-top:8px">${ico('pilt')}Vali galeriist
       <input type="file" id="gal" accept="image/*" hidden>
     </label>
-    ${db.pin() ? '' : `<a class="card backup-hint" href="#/seaded">${ico('voti')}Automaatseks lugemiseks ja Meritisse saatmiseks sisesta seadetes PIN →</a>`}
+    ${db.pin() ? '' : `<a class="card backup-hint" href="#/seaded">${ico('voti')}Automaatseks lugemiseks ja ${SIHT().kuhu} saatmiseks sisesta seadetes PIN →</a>`}
 
     <div class="month-nav" style="margin-top:18px">
       <button class="btn" id="prev">‹</button><b>${KUUD[m - 1]} ${y}</b><button class="btn" id="next">›</button>
@@ -41,7 +44,7 @@ async function list(el) {
       <div class="line"><span>Oma rahaga (${oma.length})</span><b>${eur(sum(oma))}</b></div>
       <div class="line big"><span>Kokku</span><b>${eur(sum(items))}</b></div>
     </div>
-    ${saatmata ? `<button class="btn" id="sendAll" style="width:100%;margin-top:10px">${ico('yles')}Saada Meritisse saatmata tšekid (${saatmata})</button>` : ''}
+    ${saatmata ? `<button class="btn" id="sendAll" style="width:100%;margin-top:10px">${ico('yles')}Saada ${SIHT().kuhu} saatmata tšekid (${saatmata})</button>` : ''}
     <div style="margin-top:12px">
     ${items.length ? items.map((k) => `
       <a class="entry kulu" href="#/kulud/k/${k.id}">
@@ -79,7 +82,7 @@ async function list(el) {
     list(el);
   };
   if ($('csv')) $('csv').onclick = () => {
-    const rows = [['Kuupäev', 'Müüja', 'Reg.kood', 'KMKR', 'Kirjeldus', 'Objekt', 'Makseviis', 'Summa', 'KM', 'Meritis']];
+    const rows = [['Kuupäev', 'Müüja', 'Reg.kood', 'KMKR', 'Kirjeldus', 'Objekt', 'Makseviis', 'Summa', 'KM', 'Saadetud']];
     items.forEach((k) => rows.push([k.kuupaev, k.myyja, k.regkood, k.kmkr, k.kirjeldus, k.objekt, k.makseviis === 'isiklik' ? 'oma raha' : 'firma kaart',
       db.total(k).toFixed(2).replace('.', ','), db.kmTotal(k).toFixed(2).replace('.', ','), k.merit === 'ok' ? 'jah' : 'ei']));
     const text = '﻿' + rows.map((r) => r.map((c) => `"${String(c ?? '').replace(/"/g, '""')}"`).join(';')).join('\r\n');
@@ -89,10 +92,16 @@ async function list(el) {
 }
 
 async function sendMerit(k) {
-  const pdf = await jpegToPdf(k.pilt, k.w, k.h);
   try {
-    const res = await db.api('merit', { action: 'send', kulu: { ...k, pilt: undefined, failinimi: db.failinimi(k, 'pdf') }, pdf: await toBase64(pdf) });
-    k.merit = 'ok'; k.meritViga = ''; k.meritId = res.result?.BillId || '';
+    if (siht() === 'merit') {
+      const pdf = await jpegToPdf(k.pilt, k.w, k.h);
+      const res = await db.api('merit', { action: 'send', kulu: { ...k, pilt: undefined, failinimi: db.failinimi(k, 'pdf') }, pdf: await toBase64(pdf) });
+      k.meritId = res.result?.BillId || '';
+    } else {
+      const info = [k.objekt && `Objekt: ${k.objekt}`, k.makseviis === 'isiklik' ? 'Makstud isiklike vahenditega (kuluaruanne)' : 'Makstud firma kaardiga', k.kirjeldus, k.markus].filter(Boolean).join('\n');
+      await db.api('costpocket', { failinimi: db.failinimi(k, 'jpg'), base64: await toBase64(k.pilt), tyyp: 'image/jpeg', kirjeldus: info });
+    }
+    k.merit = 'ok'; k.meritViga = ''; k.saadetud = SIHT().sees;
   } catch (e) {
     k.merit = 'viga'; k.meritViga = e.message;
     await db.put(k);
@@ -117,7 +126,7 @@ async function vorm(el, id) {
     <h1>${old ? 'Tšekk' : 'Uus tšekk'}</h1>
     <img src="${imgUrl}" class="tsekk-pilt" id="pilt" alt="Tšekk">
     <p class="note" id="ocr"></p>
-    ${k.merit === 'viga' ? `<p class="note" style="color:#ff7a7a">Meriti viga: ${esc(k.meritViga)}</p>` : ''}
+    ${k.merit === 'viga' ? `<p class="note" style="color:#ff7a7a">Saatmise viga: ${esc(k.meritViga)}</p>` : ''}
 
     <div class="card">
       <label>Makstud</label>
@@ -146,13 +155,13 @@ async function vorm(el, id) {
     <div class="result" id="tot"></div>
 
     <div class="actions">
-      <button class="btn primary" id="save">${k.merit === 'ok' ? 'Salvesta' : 'Salvesta ja saada Meritisse'}</button>
+      <button class="btn primary" id="save">${k.merit === 'ok' ? 'Salvesta' : 'Salvesta ja saada ' + SIHT().kuhu}</button>
     </div>
     <div class="actions" style="margin-top:8px">
       <button class="btn" id="drive">${ico('jaga')}Pilt Drive'i</button>
       ${old ? '<button class="btn danger" id="del">Kustuta</button>' : ''}
     </div>
-    <p class="note" id="msg">${k.merit === 'ok' ? '✓ Tšekk on Meritis kinnitamist ootamas.' : ''}</p>`;
+    <p class="note" id="msg">${k.merit === 'ok' ? '✓ Tšekk on saadetud (' + esc(k.saadetud || 'Meritis') + ').' : ''}</p>`;
 
   const $ = (q) => el.querySelector('#' + q);
   const fields = ['myyja', 'kuupaev', 'tsekiNr', 'regkood', 'kmkr', 'kirjeldus', 'objekt'];
@@ -200,12 +209,12 @@ async function vorm(el, id) {
     const b = $('save'); b.disabled = true;
     await db.put(k);
     if (k.merit !== 'ok' && db.pin()) {
-      b.textContent = 'Saadan Meritisse…';
-      try { await sendMerit(k); } catch (e) { b.disabled = false; b.textContent = 'Proovi uuesti saata'; $('msg').innerHTML = `<span style="color:#ff7a7a">Salvestatud, aga Meritisse saatmine ebaõnnestus: ${esc(e.message)}</span>`; return; }
+      b.textContent = 'Saadan ' + SIHT().kuhu + '…';
+      try { await sendMerit(k); } catch (e) { b.disabled = false; b.textContent = 'Proovi uuesti saata'; $('msg').innerHTML = `<span style="color:#ff7a7a">Salvestatud, aga ${SIHT().kuhu} saatmine ebaõnnestus: ${esc(e.message)}</span>`; return; }
     }
     location.hash = '#/kulud';
   };
-  if (old) $('del').onclick = async () => { if (confirm('Kustutan selle tšeki äpist? (Meritist see ei kustu)')) { await db.remove(k.id); location.hash = '#/kulud'; } };
+  if (old) $('del').onclick = async () => { if (confirm('Kustutan selle tšeki äpist? (saadetud koopia jääb alles)')) { await db.remove(k.id); location.hash = '#/kulud'; } };
 
   drawRows(); tot();
 
@@ -228,7 +237,7 @@ export default {
   id: 'kulud',
   icon: 'kaamera',
   title: 'Kulud ja tšekid',
-  desc: 'Pildista → Merit + Drive',
+  desc: 'Skanni → CostPocket + Drive',
   render(el, rest = []) {
     if (rest[0] === 'uus') return vorm(el, null);
     if (rest[0] === 'k') return vorm(el, rest[1]);
