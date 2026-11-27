@@ -4,6 +4,7 @@ import km from './calc/km.js';
 import pind from './calc/pind.js';
 import plaadid from './calc/plaadid.js';
 import parkett from './calc/parkett.js';
+import varv from './calc/varv.js';
 import seaded from './calc/seaded.js';
 import { ico } from './icons.js';
 import paevik from './paevik/paevik.js';
@@ -13,7 +14,7 @@ import kytus from './kytus/kytus.js';
 import ostud from './ostud/ostud.js';
 import kalender, { tulemasHtml } from './kalender/kalender.js';
 
-const tools = [palk, km, pind, plaadid, parkett];
+const tools = [palk, km, pind, plaadid, parkett, varv];
 const all = [paevik, kalender, ostud, kulud, lahetus, kytus, ...tools, seaded];
 const app = document.getElementById('app');
 
