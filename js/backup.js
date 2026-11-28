@@ -1,3 +1,4 @@
+import { shareFile } from './docx.js';
 // Varukoopia: kõik KROX-i andmed ühte faili ja tagasi
 const PREFIX = 'krox.';
 const LAST = 'krox.meta.lastBackup';
@@ -6,7 +7,7 @@ export function lastBackup() {
   try { return localStorage.getItem(LAST); } catch { return null; }
 }
 
-export function exportAll() {
+export async function exportAll() {
   const data = {};
   for (let i = 0; i < localStorage.length; i++) {
     const k = localStorage.key(i);
@@ -15,11 +16,10 @@ export function exportAll() {
   const d = new Date();
   const stamp = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   const file = { app: 'krox', version: 1, created: d.toISOString(), data };
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([JSON.stringify(file, null, 1)], { type: 'application/json' }));
-  a.download = `krox-varukoopia-${stamp}.json`;
-  a.click();
+  const res = await shareFile(new Blob([JSON.stringify(file, null, 1)], { type: 'application/json' }), `krox-varukoopia-${stamp}.json`);
+  if (res === 'cancel') return res;
   try { localStorage.setItem(LAST, stamp); } catch { /* ignore */ }
+  return res;
 }
 
 // Loeb faili; tagastab kirjete arvu tööpäevikus

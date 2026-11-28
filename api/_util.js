@@ -11,7 +11,12 @@ function checkPin(req, res) {
   return true;
 }
 
+// Android-äpp töötab aadressil https://localhost, seega lubame päringud ka teistelt aadressidelt (kaitse on PIN-iga)
 function onlyPost(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Headers', 'content-type, x-krox-pin');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  if (req.method === 'OPTIONS') { res.status(204).end(); return false; }
   if (req.method !== 'POST') { res.status(405).json({ error: 'Ainult POST' }); return false; }
   return true;
 }

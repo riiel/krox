@@ -1,0 +1,15 @@
+{
+  "appId": "ee.krox.app",
+  "appName": "KROX",
+  "webDir": "www",
+  "android": {
+    "backgroundColor": "#0b0b0b",
+    "adjustMarginsForEdgeToEdge": "force"
+  },
+  "plugins": {
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_krox",
+      "iconColor": "#c4a96b"
+    }
+  }
+}

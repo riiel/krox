@@ -1,3 +1,4 @@
+import { isNative } from '../native.js';
 // Lähetused: nimekiri, vorm, korraldus (PDF allkirjastamiseks) ja raamatupidamise fail
 import { ico } from '../icons.js';
 import * as c from './calc.js';
@@ -241,6 +242,7 @@ function vaade(el, id) {
 
   const $ = (q) => el.querySelector('#' + q);
   const msg = (t) => ($('msg').textContent = t);
+  if (isNative) $('pdf').hidden = true; // äpis printimist pole, kasuta Word-faili
   $('pdf').onclick = () => {
     const old = document.title;
     document.title = fname('LÄHETUSE KORRALDUS');

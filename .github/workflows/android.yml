@@ -1,0 +1,83 @@
+# Ehitab KROX Android-äpi (APK) ja paneb selle GitHubi "Releases" alla allalaadimiseks
+name: Android APK
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'manifest.json'
+      - 'css/**'
+      - 'js/**'
+      - 'img/**'
+      - 'mobile/**'
+      - '.github/workflows/android.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Veebifailid äppi
+        run: |
+          mkdir -p mobile/www
+          cp -r index.html manifest.json css js img mobile/www/
+
+      - name: Capacitor
+        working-directory: mobile
+        run: |
+          npm install --no-audit --no-fund
+          cp node_modules/@capacitor/core/dist/capacitor.js www/capacitor.js
+          sed -i "s|<script type=\"module\" src=\"js/app.js\"></script>|<script>window.KROX_VERSION='${{ github.run_number }}'</script><script src=\"capacitor.js\"></script><script type=\"module\" src=\"js/app.js\"></script>|" www/index.html
+          grep -q "KROX_VERSION" www/index.html
+          npx cap add android
+          RES=android/app/src/main/res
+          find $RES -name 'splash.png' -delete
+          cp -r res/* $RES/
+          sed -i 's|<item name="android:background">@drawable/splash</item>|<item name="android:background">@drawable/splash</item><item name="windowSplashScreenBackground">#0B0B0B</item>|' $RES/values/styles.xml
+          sed -i 's/versionCode 1$/versionCode ${{ github.run_number }}/; s/versionName "1.0"/versionName "1.${{ github.run_number }}"/' android/app/build.gradle
+          npx cap sync android
+
+      - name: Ehita APK
+        working-directory: mobile/android
+        run: ./gradlew assembleRelease --no-daemon --stacktrace
+
+      - name: Allkirjasta
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE_B64 }}
+          KEYSTORE_PASS: ${{ secrets.KEYSTORE_PASS }}
+        run: |
+          if [ -z "$KEYSTORE_B64" ] || [ -z "$KEYSTORE_PASS" ]; then echo "::error::Lisa GitHubi Secrets alla KEYSTORE_B64 ja KEYSTORE_PASS"; exit 1; fi
+          echo "$KEYSTORE_B64" | tr -d ' \n\r' | base64 -d > $RUNNER_TEMP/krox.keystore
+          BT=$(ls -d $ANDROID_HOME/build-tools/* | sort -V | tail -1)
+          $BT/zipalign -f -p 4 mobile/android/app/build/outputs/apk/release/app-release-unsigned.apk aligned.apk
+          $BT/apksigner sign --ks $RUNNER_TEMP/krox.keystore --ks-pass env:KEYSTORE_PASS --key-pass env:KEYSTORE_PASS --ks-key-alias krox --out KROX.apk aligned.apk
+          $BT/apksigner verify KROX.apk
+          rm -f $RUNNER_TEMP/krox.keystore
+
+      - name: Avalda
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.run_number }}
+          name: KROX äpp ${{ github.run_number }}
+          body: Lae alla KROX.apk ja paigalda. Andmed jäävad alles.
+          files: KROX.apk
+          make_latest: true

@@ -1,3 +1,4 @@
+import { isNative, shareNative } from './native.js';
 // Väike .docx generaator ilma lisateekideta (ZIP "store" režiimis + WordprocessingML)
 
 // ---- ZIP ----
@@ -71,6 +72,7 @@ export function docx(blocks) {
 
 // Jaga faili (Android: Drive, Gmail jne); kui ei toeta, laadi alla
 export async function shareFile(blob, name) {
+  if (isNative) return shareNative(blob, name);
   const file = new File([blob], name, { type: blob.type });
   try {
     if (navigator.canShare?.({ files: [file] })) { await navigator.share({ files: [file], title: name }); return 'shared'; }

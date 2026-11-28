@@ -297,3 +297,7 @@ button.icon-btn { background: none; border: 0; color: var(--muted); }
 .scan-stage canvas { touch-action: none; border-radius: 6px; }
 .scan-act { margin-top: 0; }
 .seg#siht button { font-size: .82rem; padding: 10px 4px; }
+
+/* Android-äpp: uue versiooni teade */
+.upd { display: flex; gap: 12px; align-items: center; margin-top: 18px; padding: 12px 14px; border: 1px solid #c4a96b; border-radius: 14px; color: inherit; text-decoration: none; background: rgba(196,169,107,.08); font-size: 14px; line-height: 1.35; }
+.upd .ico { flex: none; width: 24px; height: 24px; }

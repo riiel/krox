@@ -1,3 +1,4 @@
+import { shareFile } from '../docx.js';
 // Tööriistad: nimekiri numbrite, seerianumbrite, piltide ja asukohtadega
 import { ico } from '../icons.js';
 import { compress } from '../kulud/pilt.js';
@@ -86,8 +87,7 @@ async function list(el) {
     const rows = [['Nr', 'Nimetus', 'Tootja', 'Mudel', 'Seerianr', 'Omanik', 'Asukoht', 'Ostetud', 'Hind', 'Märkus']];
     all.forEach((t) => rows.push([t.nr, t.nimi, t.tootja, t.mudel, t.seerianr, t.omanik === 'paarimees' ? 'paarimees' : 'KROX', kohtTekst(t), t.ostetud, t.hind, t.markus]));
     const text = '﻿' + rows.map((r) => r.map((c) => `"${String(c ?? '').replace(/"/g, '""')}"`).join(';')).join('\r\n');
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([text], { type: 'text/csv' })); a.download = 'tooriistad.csv'; a.click();
+    shareFile(new Blob([text], { type: 'text/csv' }), 'tooriistad.csv');
   };
 }
 

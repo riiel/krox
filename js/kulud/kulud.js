@@ -86,8 +86,7 @@ async function list(el) {
     items.forEach((k) => rows.push([k.kuupaev, k.myyja, k.regkood, k.kmkr, k.kirjeldus, k.objekt, k.makseviis === 'isiklik' ? 'oma raha' : 'firma kaart',
       db.total(k).toFixed(2).replace('.', ','), db.kmTotal(k).toFixed(2).replace('.', ','), k.merit === 'ok' ? 'jah' : 'ei']));
     const text = '﻿' + rows.map((r) => r.map((c) => `"${String(c ?? '').replace(/"/g, '""')}"`).join(';')).join('\r\n');
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([text], { type: 'text/csv' })); a.download = `kulud-${month}.csv`; a.click();
+    shareFile(new Blob([text], { type: 'text/csv' }), `kulud-${month}.csv`);
   };
 }
 

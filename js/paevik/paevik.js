@@ -1,3 +1,4 @@
+import { shareFile } from '../docx.js';
 // Tööpäevik: kuukalender, päeva kirjed, kuu kokkuvõte
 import { ico } from '../icons.js';
 import * as db from './store.js';
@@ -34,10 +35,7 @@ function csv(ym, list) {
       f((db.n(x.kogus) * db.n(x.hind)).toFixed(2)), i ? '' : e.markmed]));
   });
   const text = '﻿' + rows.map((r) => r.map((c) => `"${String(c ?? '').replace(/"/g, '""')}"`).join(';')).join('\r\n');
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([text], { type: 'text/csv' }));
-  a.download = `toopaevik-${ym}.csv`;
-  a.click();
+  shareFile(new Blob([text], { type: 'text/csv' }), `toopaevik-${ym}.csv`);
 }
 
 function backupHint() {

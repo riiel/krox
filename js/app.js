@@ -7,14 +7,15 @@ import parkett from './calc/parkett.js';
 import varv from './calc/varv.js';
 import seaded from './calc/seaded.js';
 import { ico } from './icons.js';
-import { openLinks } from './lingid.js';
+import { openLinks, closeLinks } from './lingid.js';
+import { initNative, scheduleReminders, checkUpdate } from './native.js';
 import paevik from './paevik/paevik.js';
 import lahetus from './lahetus/lahetus.js';
 import kulud from './kulud/kulud.js';
 import kytus from './kytus/kytus.js';
 import ostud from './ostud/ostud.js';
 import toorist from './toorist/toorist.js';
-import kalender, { headerHtml } from './kalender/kalender.js';
+import kalender, { headerHtml, tulemas } from './kalender/kalender.js';
 
 const tools = [palk, km, pind, plaadid, parkett, varv];
 const all = [paevik, kalender, ostud, toorist, kulud, lahetus, kytus, ...tools, seaded];
@@ -32,11 +33,17 @@ function home() {
   app.innerHTML = `
     <div class="nav-list home">${[paevik, kalender, ostud, toorist, kulud, lahetus, kytus].map(row).join('')}</div>
     <h2 class="home-h">Kalkulaatorid</h2>
-    <div class="nav-chips">${tools.map(chip).join('')}</div>`;
+    <div class="nav-chips">${tools.map(chip).join('')}</div>
+    <div id="upd"></div>`;
+  checkUpdate().then((u) => {
+    const box = document.getElementById('upd');
+    if (u && box) box.innerHTML = `<a class="upd" href="${u.url}">${ico('alla', 'gold')}<span><b>Uus versioon saadaval (${u.uus})</b><br>Vajuta, lae alla ja paigalda — andmed jäävad alles.</span></a>`;
+  });
 }
 
 function route() {
   document.getElementById('hdrNext').innerHTML = headerHtml();
+  scheduleReminders(tulemas(60, 200));
   const [path, qs = ''] = location.hash.replace(/^#\/?/, '').split('?');
   const [id, ...rest] = path.split('/').filter(Boolean);
   const q = Object.fromEntries(new URLSearchParams(qs));
@@ -56,4 +63,5 @@ window.addEventListener('hashchange', route);
 document.getElementById('gearBtn').innerHTML = ico('seaded');
 document.getElementById('lnkBtn').innerHTML = ico('link');
 document.getElementById('lnkBtn').onclick = openLinks;
+initNative({ onBack: () => { const s = document.querySelector('.sheet-wrap.open'); if (s) { closeLinks(); return true; } return false; } });
 route();

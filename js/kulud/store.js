@@ -1,3 +1,4 @@
+import { API_BASE } from '../native.js';
 // Kulud: andmed + pildid IndexedDB-s (pildid on liiga suured localStorage jaoks)
 const DB = 'krox', STORE = 'kulud';
 
@@ -29,7 +30,7 @@ export const pin = () => { try { return localStorage.getItem('krox.pin') || ''; 
 export const setPin = (p) => { try { localStorage.setItem('krox.pin', String(p).trim()); } catch { /* */ } };
 
 export async function api(path, body) {
-  const r = await fetch('/api/' + path, {
+  const r = await fetch(API_BASE + '/api/' + path, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'x-krox-pin': pin() },
     body: JSON.stringify(body),

@@ -3,6 +3,7 @@ import { ico } from '../icons.js';
 import { val, rates, save, DEFAULT_RATES } from '../util.js';
 import { exportAll, importFile, lastBackup } from '../backup.js';
 import { pin, setPin, api } from '../kulud/store.js';
+import { isNative, VERSION } from '../native.js';
 
 const fields = [
   ['tulumaks', 'Tulumaks (%)'],
@@ -49,9 +50,11 @@ export default {
           <button class="btn primary" id="exp">${ico('alla')}Tee varukoopia</button>
           <button class="btn" id="imp">${ico('yles')}Taasta failist</button>
         </div>
-        <input type="file" id="file" accept=".json,application/json" hidden>
+        <input type="file" id="file" hidden>
         <p class="note" id="bmsg"></p>
       </div>
+
+      ${isNative ? `<p class="note">KROX äpp, versioon ${VERSION || '?'}</p>` : ''}
 
       <h2>Maksumäärad</h2>
       <div class="card">
@@ -85,7 +88,10 @@ export default {
         $('pmsg').textContent = `✓ Merit töötab. Leitud käibemaksumäärad: ${[...new Set(pcts)].sort((a, b) => b - a).join('%, ')}%`;
       } catch (e) { $('pmsg').textContent = '✗ ' + e.message; }
     };
-    $('exp').onclick = () => { exportAll(); $('bmsg').textContent = 'Fail laaditi alla (vaata „Allalaaditud“ kausta).'; };
+    $('exp').onclick = async () => {
+      const r = await exportAll();
+      $('bmsg').textContent = r === 'downloaded' ? 'Fail laaditi alla (vaata „Allalaaditud“ kausta).' : r === 'shared' ? '✓ Varukoopia saadetud. Hoia seda Drive\'is.' : '';
+    };
     $('imp').onclick = () => $('file').click();
     $('file').onchange = async () => {
       const file = $('file').files[0];

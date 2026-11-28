@@ -1,0 +1,4 @@
+mobile/*.keystore
+mobile/www/
+mobile/node_modules/
+mobile/android/
