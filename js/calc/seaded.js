@@ -42,7 +42,7 @@ export default {
 
       <h2>Varukoopia</h2>
       <div class="card">
-        <p class="note" style="margin-top:0">Tööpäevik, lähetused ja seaded on ainult selles telefonis (tšekipildid on Meritis/Drive'is).
+        <p class="note" style="margin-top:0">Tööpäevik, lähetused ja seaded on ainult selles telefonis (tšekipildid on CostPocketis/Drive'is).
         Tee aeg-ajalt varukoopia ja hoia faili näiteks Google Drive'is.</p>
         <p class="note"><b>Viimane varukoopia:</b> ${lb ? lb.split('-').reverse().join('.') : 'pole veel tehtud'}</p>
         <div class="actions" style="margin-top:8px">
