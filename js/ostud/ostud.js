@@ -2,6 +2,31 @@
 import { ico } from '../icons.js';
 import * as st from './store.js';
 import * as paevik from '../paevik/store.js';
+import { api, pin } from '../kulud/store.js';
+import { shareText } from '../native.js';
+
+// Tõlked jagamiseks (Soome klient jne)
+const KEELED = { et: 'Eesti', fi: 'Suomi', en: 'English' };
+const GRUPP = {
+  fi: { pood: 'Kaupasta', ladu: 'Varastosta', kodu: 'Kotoa', muu: 'Muuta' },
+  en: { pood: 'From the store', ladu: 'From the warehouse', kodu: 'From home', muu: 'Other' },
+};
+const YK = {
+  fi: { tk: 'kpl', pk: 'pkt', kott: 'säkki', kotti: 'säkkiä', 'm²': 'm²', jm: 'jm', l: 'l', kg: 'kg', rull: 'rulla', rulli: 'rullaa', kmpl: 'sarja' },
+  en: { tk: 'pcs', pk: 'pack', kott: 'bag', kotti: 'bags', 'm²': 'm²', jm: 'lm', l: 'l', kg: 'kg', rull: 'roll', rulli: 'rolls', kmpl: 'set' },
+};
+const TKEY = 'krox.tolked';
+const tCache = () => { try { return JSON.parse(localStorage.getItem(TKEY)) || {}; } catch { return {}; } };
+async function tolgi(keel, read) {
+  const c = tCache(); c[keel] ||= {};
+  const puudu = [...new Set(read.filter((x) => x && !c[keel][x]))];
+  if (puudu.length) {
+    const r = await api('tolgi', { keel, read: puudu });
+    puudu.forEach((x, i) => (c[keel][x] = r.read[i]));
+    try { localStorage.setItem(TKEY, JSON.stringify(c)); } catch { /* */ }
+  }
+  return (x) => c[keel][x] || x;
+}
 
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 // Ühiku kuvamine õiges käändes: 1 kott, 4 kotti
@@ -50,9 +75,10 @@ function view(el) {
     ${ostetud.length ? `<h2>Olemas (${ostetud.length})</h2><div class="ost-list">${ostetud.map(row).join('')}</div>` : ''}
 
     <div class="actions">
-      ${ostmata.length ? `<button class="btn" id="jaga">${ico('jaga')}Jaga nimekirja</button>` : ''}
+      ${ostmata.length ? `<button class="btn" id="jaga">${ico('jaga')}Jaga / tõlgi</button>` : ''}
       ${ostetud.length ? `<button class="btn" id="puhasta">${ico('prugi')}Eemalda tehtud</button>` : ''}
     </div>
+    <div id="jagaBox"></div>
     <div class="actions" style="margin-top:8px">
       <button class="btn" id="nimeta">${ico('pliiats')}Nimeta ümber</button>
       ${d.listid.length > 1 ? `<button class="btn danger" id="kustuta">Kustuta nimekiri</button>` : ''}
@@ -103,13 +129,61 @@ function view(el) {
     }));
   });
 
-  if ($('jaga')) $('jaga').onclick = async () => {
-    const text = `${l.nimi}\n` + Object.entries(KUST).map(([k, v]) => {
-      const g = ostmata.filter((i) => kustOf(i) === k);
-      return g.length ? `\n${v.nimi}:\n` + g.map((i) => `• ${i.nimi}${i.kogus ? ` – ${i.kogus} ${yk(i)}`.trimEnd() : ''}`).join('\n') : '';
-    }).join('\n').trim();
-    try { if (navigator.share) { await navigator.share({ text }); return; } } catch (e) { if (e.name === 'AbortError') return; }
-    try { await navigator.clipboard.writeText(text); $('msg').textContent = 'Kopeeritud, saad sõnumisse kleepida.'; } catch { prompt('Kopeeri:', text); }
+  if ($('jaga')) $('jaga').onclick = () => {
+    const box = $('jagaBox');
+    if (box.innerHTML) { box.innerHTML = ''; return; }
+    const grupid = Object.keys(KUST).filter((k) => ostmata.some((i) => kustOf(i) === k));
+    const S = { keel: localStorage.getItem('krox.ostud.keel') || 'et', grupid: new Set(grupid) };
+    box.innerHTML = `
+      <div class="card jaga-box">
+        <label style="margin-top:0">Keel</label>
+        <div class="seg" id="keel">${Object.entries(KEELED).map(([k, v]) => `<button data-v="${k}">${v}</button>`).join('')}</div>
+        ${grupid.length > 1 ? `<label>Mida saata</label><div class="jaga-grp">${grupid.map((k) => `<label class="check"><input type="checkbox" value="${k}" checked> ${KUST[k].nimi}</label>`).join('')}</div>` : ''}
+        <label>Tekst (saad enne saatmist muuta)</label>
+        <textarea id="jtekst" rows="8"></textarea>
+        <p class="note" id="jmsg"></p>
+        <div class="actions">
+          <button class="btn primary" id="jsaada">${ico('jaga')}Saada</button>
+          <button class="btn" id="jkopeeri">${ico('kopeeri')}Kopeeri</button>
+        </div>
+      </div>`;
+    const q = (x) => box.querySelector(x);
+    let jarg = 0;
+    const koosta = async () => {
+      const nr = ++jarg;
+      box.querySelectorAll('#keel button').forEach((b) => b.classList.toggle('on', b.dataset.v === S.keel));
+      const valik = Object.keys(KUST).filter((k) => S.grupid.has(k));
+      const read = ostmata.filter((i) => S.grupid.has(kustOf(i)));
+      let t = (x) => x, pais = (k) => KUST[k].nimi + ':', uh = (i) => yk(i), pealkiri = l.nimi;
+      if (S.keel !== 'et') {
+        if (!pin()) { q('#jmsg').textContent = 'Tõlkimiseks lisa Seadetes PIN.'; return; }
+        q('#jmsg').textContent = 'Tõlgin…';
+        try { t = await tolgi(S.keel, [l.nimi, ...read.map((i) => i.nimi)]); }
+        catch (e) { if (nr === jarg) q('#jmsg').textContent = 'Tõlkimine ei õnnestunud: ' + e.message; return; }
+        if (nr !== jarg) return;
+        pealkiri = t(l.nimi);
+        pais = (k) => GRUPP[S.keel][k] + ':';
+        uh = (i) => YK[S.keel][yk(i)] ?? yk(i);
+        q('#jmsg').textContent = 'Tõlgitud automaatselt — vaata üle.';
+      } else q('#jmsg').textContent = '';
+      const yksGrupp = valik.length === 1;
+      q('#jtekst').value = `${pealkiri}\n\n` + valik.map((k) => {
+        const g = read.filter((i) => kustOf(i) === k);
+        return (yksGrupp ? '\n' : `\n${pais(k)}\n`) + g.map((i) => `• ${t(i.nimi)}${i.kogus ? ` – ${i.kogus} ${uh(i)}`.trimEnd() : ''}`).join('\n');
+      }).join('\n').trim().replace(/^\n+/, '');
+    };
+    box.querySelectorAll('#keel button').forEach((b) => (b.onclick = () => { S.keel = b.dataset.v; localStorage.setItem('krox.ostud.keel', S.keel); koosta(); }));
+    box.querySelectorAll('.jaga-grp input').forEach((c) => (c.onchange = () => { c.checked ? S.grupid.add(c.value) : S.grupid.delete(c.value); koosta(); }));
+    q('#jsaada').onclick = async () => {
+      const r = await shareText(q('#jtekst').value);
+      if (r === 'copied') q('#jmsg').textContent = 'Kopeeritud, saad sõnumisse kleepida.';
+    };
+    q('#jkopeeri').onclick = async () => {
+      try { await navigator.clipboard.writeText(q('#jtekst').value); q('#jmsg').textContent = 'Kopeeritud.'; }
+      catch { q('#jtekst').select(); q('#jmsg').textContent = 'Tekst on valitud, vajuta „Kopeeri“.'; }
+    };
+    koosta();
+    box.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
   if ($('puhasta')) $('puhasta').onclick = () => { l.items = l.items.filter((i) => !i.ostetud); redraw(); };
   $('nimeta').onclick = () => { const v = prompt('Uus nimi:', l.nimi); if (v && v.trim()) { l.nimi = v.trim(); redraw(); } };

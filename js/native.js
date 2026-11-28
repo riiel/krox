@@ -31,6 +31,18 @@ export async function shareNative(blob, name) {
   }
 }
 
+// Teksti jagamine (WhatsApp, SMS, e-post); kui ei saa, kopeerib
+export async function shareText(text) {
+  try {
+    if (isNative) { await plugin('Share').share({ text, dialogTitle: 'Saada' }); return 'shared'; }
+    if (navigator.share) { await navigator.share({ text }); return 'shared'; }
+  } catch (e) {
+    if (e?.name === 'AbortError' || /cancel/i.test(String(e?.message || e))) return 'cancel';
+  }
+  try { await navigator.clipboard.writeText(text); } catch { prompt('Kopeeri:', text); }
+  return 'copied';
+}
+
 // ---------- meeldetuletused ----------
 const hash = (s) => { let h = 0; for (const c of s) h = (h * 31 + c.charCodeAt(0)) | 0; return Math.abs(h) % 2000000000; };
 let timer = null, permOk = null;
