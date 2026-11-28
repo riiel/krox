@@ -3,7 +3,7 @@ import { ico } from '../icons.js';
 import { val, rates, save, DEFAULT_RATES } from '../util.js';
 import { exportAll, importFile, lastBackup, autoBackup, autoInfo } from '../backup.js';
 import { pin, setPin, api } from '../kulud/store.js';
-import { isNative, VERSION } from '../native.js';
+import { isNative, VERSION, checkUpdate } from '../native.js';
 
 const fields = [
   ['tulumaks', 'Tulumaks (%)'],
@@ -55,7 +55,12 @@ export default {
         <p class="note" id="bmsg"></p>
       </div>
 
-      ${isNative ? `<p class="note">KROX äpp, versioon ${VERSION || '?'}</p>` : ''}
+      ${isNative ? `<h2>Äpp</h2>
+      <div class="card">
+        <p class="note" style="margin-top:0">Praegune versioon: <b>${VERSION || '?'}</b></p>
+        <button class="btn" id="upd" style="width:100%">${ico('alla')}Kontrolli uuendusi</button>
+        <p class="note" id="umsg"></p>
+      </div>` : ''}
 
       <h2>Maksumäärad</h2>
       <div class="card">
@@ -97,6 +102,13 @@ export default {
       $('bmsg').textContent = 'Saadan…';
       try { const r = await autoBackup(true); $('bmsg').textContent = `✓ Varukoopia saadetud: ${r.to}`; $('auto').innerHTML = autoTxt(); }
       catch (e) { $('bmsg').textContent = '✗ ' + e.message; }
+    };
+    if ($('upd')) $('upd').onclick = async () => {
+      $('umsg').textContent = 'Kontrollin…';
+      try {
+        const u = await checkUpdate(true);
+        $('umsg').innerHTML = u ? `<a class="upd" href="${u.url}">${ico('alla', 'gold')}<span><b>Uus versioon ${u.uus} saadaval</b><br>Vajuta, lae alla ja paigalda — andmed jäävad alles.</span></a>` : '✓ Sul on uusim versioon.';
+      } catch (e) { $('umsg').textContent = 'Ei saanud kontrollida: ' + e.message; }
     };
     $('imp').onclick = () => $('file').click();
     $('file').onchange = async () => {

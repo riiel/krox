@@ -83,19 +83,19 @@ export function scheduleReminders(events) {
 
 // ---------- uuendused ----------
 const UKEY = 'krox.meta.update';
-export async function checkUpdate() {
+export async function checkUpdate(force = false) {
   if (!isNative || !VERSION) return null;
   try {
     const last = JSON.parse(localStorage.getItem(UKEY) || 'null');
-    if (last && Date.now() - last.t < 6 * 3600e3) return last.uus > Number(VERSION) ? last : null;
-    const r = await fetch('https://api.github.com/repos/riiel/krox/releases/latest');
-    if (!r.ok) return null;
+    if (!force && last && Date.now() - last.t < 10 * 60e3) return last.uus > Number(VERSION) ? last : null;
+    const r = await fetch('https://api.github.com/repos/riiel/krox/releases/latest', { cache: 'no-store' });
+    if (!r.ok) { if (force) throw new Error('GitHub vastas ' + r.status); return null; }
     const j = await r.json();
     const asset = (j.assets || []).find((a) => a.name.endsWith('.apk'));
     const info = { t: Date.now(), uus: Number(String(j.tag_name).replace(/\D/g, '')), url: asset?.browser_download_url || j.html_url };
     localStorage.setItem(UKEY, JSON.stringify(info));
     return info.uus > Number(VERSION) ? info : null;
-  } catch { return null; }
+  } catch (e) { if (force) throw e; return null; }
 }
 // ---------- käivitamine ----------
 export function initNative({ onBack }) {
