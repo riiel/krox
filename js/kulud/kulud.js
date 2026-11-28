@@ -1,7 +1,8 @@
 // Kulud ja tšekid: pildista -> loe automaatselt -> Merit (kinnitamist ootama) + Drive
 import { ico } from '../icons.js';
 import * as db from './store.js';
-import { compress, toBase64, jpegToPdf } from './pilt.js';
+import { compress, toBase64, jpegToPdf, tukid } from './pilt.js';
+import { zoom } from '../zoom.js';
 import { scan } from './skanner.js';
 import * as paevik from '../paevik/store.js';
 import { eur } from '../util.js';
@@ -62,7 +63,7 @@ async function list(el) {
   const pick = async (input) => {
     const f = input.files[0]; if (!f) return;
     const scanned = await scan(f);
-    const { blob, w, h } = await compress(scanned);
+    const { blob, w, h } = await compress(scanned, 1600, 0.85, 1100);
     pending = { pilt: blob, w, h };
     location.hash = '#/kulud/uus';
   };
@@ -123,7 +124,7 @@ async function vorm(el, id) {
   el.innerHTML = `
     <a class="back" href="#/kulud">← Kulud</a>
     <h1>${old ? 'Tšekk' : 'Uus tšekk'}</h1>
-    <img src="${imgUrl}" class="tsekk-pilt" id="pilt" alt="Tšekk">
+    <img src="${imgUrl}" class="tsekk-pilt" id="pilt" alt="Tšekk" title="Vajuta suurendamiseks">
     <p class="note" id="ocr"></p>
     ${k.merit === 'viga' ? `<p class="note" style="color:#ff7a7a">Saatmise viga: ${esc(k.meritViga)}</p>` : ''}
 
@@ -216,17 +217,22 @@ async function vorm(el, id) {
   if (old) $('del').onclick = async () => { if (confirm('Kustutan selle tšeki äpist? (saadetud koopia jääb alles)')) { await db.remove(k.id); location.hash = '#/kulud'; } };
 
   drawRows(); tot();
+  $('pilt').onclick = () => zoom(imgUrl);
 
   // automaatne lugemine uue tšeki puhul
-  if (!old && db.pin()) {
+  const loe = async () => {
     $('ocr').innerHTML = `${ico('otsi')}Loen tšekki…`;
     try {
-      const o = await db.api('loe-tsekk', { image: await toBase64(k.pilt) });
+      const o = await db.api('loe-tsekk', { images: await tukid(k.pilt) });
       fill(o);
       $('ocr').textContent = '✓ Tšekk loetud. Kontrolli andmed üle.';
     } catch (e) {
-      $('ocr').textContent = 'Automaatne lugemine ei õnnestunud (' + e.message + '). Täida käsitsi.';
+      $('ocr').innerHTML = `Automaatne lugemine ei õnnestunud (${esc(e.message)}). <button class="btn small" id="uuesti">${ico('otsi')}Proovi uuesti</button>`;
+      $('uuesti').onclick = loe;
     }
+  };
+  if (!old && db.pin()) {
+    loe();
   } else if (!old) {
     $('ocr').textContent = 'Täida andmed käsitsi (automaatseks lugemiseks lisa seadetes PIN).';
   }

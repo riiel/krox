@@ -1,12 +1,14 @@
 // Pildi vähendamine ja JPEG -> PDF (ühe lehega A4, pilt mahutatud lehele)
 
-export async function compress(file, max = 1600, quality = 0.82) {
+// max = pikem külg; minShort > 0 hoiab pikkade tšekkide puhul lühema külje loetavana (pikem külg kuni 3600)
+export async function compress(file, max = 1600, quality = 0.82, minShort = 0) {
   const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' }).catch(() => null);
   const img = bmp || await new Promise((res, rej) => {
     const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(file);
   });
   const w0 = img.width, h0 = img.height;
-  const k = Math.min(1, max / Math.max(w0, h0));
+  let k = Math.min(1, max / Math.max(w0, h0));
+  if (minShort) k = Math.min(1, Math.max(k, Math.min(minShort / Math.min(w0, h0), 3600 / Math.max(w0, h0))));
   const w = Math.round(w0 * k), h = Math.round(h0 * k);
   const c = document.createElement('canvas'); c.width = w; c.height = h;
   const ctx = c.getContext('2d');
@@ -53,4 +55,21 @@ export async function jpegToPdf(blob, w, h) {
   push(`xref\n0 6\n0000000000 65535 f \n${[1, 2, 3, 4, 5].map((i) => String(offsets[i]).padStart(10, '0') + ' 00000 n \n').join('')}`);
   push(`trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`);
   return new Blob(parts, { type: 'application/pdf' });
+}
+
+// Pikk tšekk tükkideks (ülevalt alla, väikese ülekattega), et AI näeks väikest kirja
+export async function tukid(blob) {
+  const bmp = await createImageBitmap(blob);
+  const { width: w, height: h } = bmp;
+  const n = h / w > 2.2 ? Math.ceil(h / (w * 1.6)) : 1;
+  if (n === 1) return [await toBase64(blob)];
+  const step = h / n, over = Math.round(step * 0.08);
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    const y0 = Math.max(0, Math.round(i * step) - over), y1 = Math.min(h, Math.round((i + 1) * step) + over);
+    const c = document.createElement('canvas'); c.width = w; c.height = y1 - y0;
+    c.getContext('2d').drawImage(bmp, 0, y0, w, y1 - y0, 0, 0, w, y1 - y0);
+    out.push(await toBase64(await new Promise((r) => c.toBlob(r, 'image/jpeg', 0.85))));
+  }
+  return out;
 }

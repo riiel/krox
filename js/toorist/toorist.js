@@ -2,6 +2,7 @@ import { shareFile } from '../docx.js';
 // Tööriistad: nimekiri numbrite, seerianumbrite, piltide ja asukohtadega
 import { ico } from '../icons.js';
 import { compress } from '../kulud/pilt.js';
+import { zoom } from '../zoom.js';
 import * as paevik from '../paevik/store.js';
 
 const KEY = 'krox.tooriistad';
@@ -148,7 +149,7 @@ async function vorm(el, id) {
   el.querySelectorAll('#ak button').forEach((b) => (b.onclick = () => setAk(b.dataset.v)));
   setAk(t.asukoht);
 
-  const showImg = (blob) => { $('ph').innerHTML = `<img src="${URL.createObjectURL(blob)}" alt="">`; };
+  const showImg = (blob) => { const u = URL.createObjectURL(blob); $('ph').innerHTML = `<img src="${u}" alt="" style="cursor:zoom-in">`; $('ph').querySelector('img').onclick = () => zoom(u); };
   if (t.pilt) pilt(t.id).then((b) => b && showImg(b)).catch(() => {});
   $('file').onchange = async () => {
     const f = $('file').files[0]; if (!f) return;
