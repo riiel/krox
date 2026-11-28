@@ -254,7 +254,7 @@ h2.grp .ico { width: 18px; height: 18px; color: var(--accent); margin: 0; }
 
 /* Kompaktne avaleht */
 main { padding-top: 12px; }
-.nav-list.home .nav-row { padding: 9px 12px; gap: 12px; }
+.nav-list.home .nav-row { padding: 7.5px 12px; gap: 12px; }
 .nav-list.home .nav-row > .ico { width: 21px; height: 21px; }
 .nav-list.home .nr-text .t { font-size: .95rem; }
 .nav-list.home .nr-text .d { font-size: .75rem; }
@@ -336,3 +336,20 @@ button.icon-btn { background: none; border: 0; color: var(--muted); }
 .firma-c { flex: none; color: var(--muted); width: 22px; text-align: center; }
 .firma-c .ico { width: 20px; height: 20px; margin: 0; }
 .firma-row.ok .firma-c { color: var(--accent); font-weight: 700; }
+
+/* Hinnapakkumine */
+.hp-row { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 10px; margin-bottom: 8px; }
+.hp-r1 { display: flex; gap: 8px; align-items: stretch; }
+.hp-r1 input { flex: 1; min-width: 0; }
+.hp-t { flex: none; display: flex; }
+.hp-t button { padding: 6px 8px; font-size: .8rem; }
+.hp-tolge { margin-top: 8px; font-size: .9rem; color: #cfc6b0; }
+.hp-r2 { display: grid; grid-template-columns: 1fr 74px 1fr auto 44px; gap: 6px; margin-top: 8px; align-items: center; }
+.hp-r2 input, .hp-r2 select { min-width: 0; }
+.hp-sum { font-size: .9rem; text-align: right; white-space: nowrap; padding: 0 2px; }
+.hp-r2 .btn { padding: 0; height: 100%; display: flex; align-items: center; justify-content: center; }
+.hp-r2 .btn .ico { margin: 0; }
+.tag.st-saadetud { color: var(--accent); border-color: #4d4228; }
+.tag.st-kinnitatud { color: #7fd18b; border-color: #2c5a33; }
+.tag.st-loobutud { color: #ff7a7a; border-color: #5a2c2c; }
+#staatus button { font-size: .8rem; padding: 8px 4px; }

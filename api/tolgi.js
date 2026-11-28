@@ -9,10 +9,10 @@ module.exports = async (req, res) => {
   if (!key) return res.status(500).json({ error: 'ANTHROPIC_API_KEY pole Vercelis seadistatud' });
   const { keel, read } = req.body || {};
   if (!KEELED[keel] || !Array.isArray(read) || !read.length || read.length > 200) return res.status(400).json({ error: 'Vale päring' });
-  const prompt = `Tõlgi need ehituse ja remondi materjalide/tööriistade nimetused eesti keelest ${KEELED[keel]} keelde.
-Kasuta ehituspoodides (Bauhaus, K-Rauta, Stark) tavalisi termineid. Kaubamärgid ja tootekoodid (nt Mapei, Ceresit CM 17, Makita) jäta samaks.
+  const prompt = `Tõlgi need ehitus- ja remonditööde, materjalide ja tööriistade nimetused ning laused eesti keelest ${KEELED[keel]} keelde.
+Kasuta ehitusvaldkonna ja ehituspoodide (Bauhaus, K-Rauta, Stark) tavalisi termineid; lauseid tõlgi loomulikult ja viisakalt (hinnapakkumise toon). Kaubamärgid ja tootekoodid (nt Mapei, Ceresit CM 17, Makita) jäta samaks.
 Vasta AINULT JSON-massiiviga, sama järjekord ja sama arv ridu, ilma muu tekstita.
-${JSON.stringify(read.map((s) => String(s).slice(0, 200)))}`;
+${JSON.stringify(read.map((s) => String(s).slice(0, 1500)))}`;
   try {
     const r = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
