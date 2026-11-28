@@ -31,7 +31,7 @@ export function purgid(vaja, sizes) {
 export default {
   id: 'varv',
   icon: 'rull',
-  short: 'Värv, krunt',
+  short: 'Värv',
   title: 'Värv ja krunt',
   desc: 'Liitrid ja purgid',
   render(el) {

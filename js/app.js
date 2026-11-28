@@ -5,6 +5,11 @@ import pind from './calc/pind.js';
 import plaadid from './calc/plaadid.js';
 import parkett from './calc/parkett.js';
 import varv from './calc/varv.js';
+import paigutus from './calc/paigutus.js';
+import langus from './calc/langus.js';
+import hydro from './calc/hydro.js';
+import tasandus from './calc/tasandus.js';
+import vaterpass from './calc/vaterpass.js';
 import seaded from './calc/seaded.js';
 import { ico } from './icons.js';
 import { openLinks, closeLinks } from './lingid.js';
@@ -21,7 +26,7 @@ import firma from './firma.js';
 import pakkumine from './pakkumine/pakkumine.js';
 import kalender, { headerHtml, tulemas } from './kalender/kalender.js';
 
-const tools = [palk, km, pind, plaadid, parkett, varv];
+const tools = [pind, plaadid, paigutus, langus, hydro, tasandus, parkett, varv, vaterpass, palk, km];
 const all = [paevik, kalender, ostud, toorist, kulud, pakkumine, lahetus, kytus, ...tools, seaded, firma];
 const app = document.getElementById('app');
 
@@ -37,7 +42,7 @@ function home() {
   app.innerHTML = `
     <div class="nav-list home">${[paevik, kalender, ostud, toorist, kulud, pakkumine, lahetus, kytus].map(row).join('')}</div>
     <h2 class="home-h">Kalkulaatorid</h2>
-    <div class="nav-chips">${tools.map(chip).join('')}</div>
+    <div class="nav-chips c3">${tools.map(chip).join('')}</div>
     <div id="upd"></div>`;
   checkUpdate().then((u) => {
     const box = document.getElementById('upd');

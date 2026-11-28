@@ -7,7 +7,7 @@ import * as paevik from '../paevik/store.js';
 export default {
   id: 'plaadid',
   icon: 'plaadid',
-  short: 'Plaadid, ankrud',
+  short: 'Plaadid',
   title: 'Plaadid, liim, vuuk',
   desc: 'Plaadid, liim, vuuk, ankrud',
   render(el) {
