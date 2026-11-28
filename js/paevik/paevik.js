@@ -5,6 +5,8 @@ import * as db from './store.js';
 import { eur, num } from '../util.js';
 import kirje from './kirje.js';
 import { lastBackup } from '../backup.js';
+import { isNative } from '../native.js';
+import { pin } from '../kulud/store.js';
 
 const KUUD = ['jaanuar', 'veebruar', 'märts', 'aprill', 'mai', 'juuni', 'juuli', 'august', 'september', 'oktoober', 'november', 'detsember'];
 let sel = db.today(); // valitud päev
@@ -39,6 +41,7 @@ function csv(ym, list) {
 }
 
 function backupHint() {
+  if (isNative && pin()) return ''; // äpis automaatne varukoopia
   if (!db.all().length) return '';
   const lb = lastBackup();
   const days = lb ? Math.floor((Date.now() - new Date(lb).getTime()) / 864e5) : null;

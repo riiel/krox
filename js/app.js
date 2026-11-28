@@ -10,6 +10,7 @@ import { ico } from './icons.js';
 import { openLinks, closeLinks } from './lingid.js';
 import { initNative, scheduleReminders, checkUpdate } from './native.js';
 import { zoomOpen, zoomClose } from './zoom.js';
+import { autoBackup } from './backup.js';
 import paevik from './paevik/paevik.js';
 import lahetus from './lahetus/lahetus.js';
 import kulud from './kulud/kulud.js';
@@ -66,3 +67,7 @@ document.getElementById('lnkBtn').innerHTML = ico('link');
 document.getElementById('lnkBtn').onclick = openLinks;
 initNative({ onBack: () => { if (zoomOpen()) { zoomClose(); return true; } const s = document.querySelector('.sheet-wrap.open'); if (s) { closeLinks(); return true; } return false; } });
 route();
+
+// Automaatne varukoopia (äpis): veidi pärast avamist ja iga kord, kui äpp uuesti ette tuleb
+setTimeout(() => autoBackup(), 8000);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') setTimeout(() => autoBackup(), 3000); });

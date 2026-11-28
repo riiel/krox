@@ -1,7 +1,7 @@
 // Seaded: varukoopia, maksumäärad
 import { ico } from '../icons.js';
 import { val, rates, save, DEFAULT_RATES } from '../util.js';
-import { exportAll, importFile, lastBackup } from '../backup.js';
+import { exportAll, importFile, lastBackup, autoBackup, autoInfo } from '../backup.js';
 import { pin, setPin, api } from '../kulud/store.js';
 import { isNative, VERSION } from '../native.js';
 
@@ -22,6 +22,7 @@ export default {
   render(el) {
     const r = rates();
     const lb = lastBackup();
+    const autoTxt = () => { const a = autoInfo(); return a?.kp ? `Viimane: <b>${a.kp.split('-').reverse().join('.')}</b> → ${a.to || 'Gmail'}` : (pin() ? 'Esimene varukoopia läheb teele järgmisel avamisel.' : 'Automaatseks varukoopiaks lisa ülal PIN.'); };
     el.innerHTML = `
       <h2>Tšekid</h2>
       <div class="card">
@@ -43,14 +44,14 @@ export default {
 
       <h2>Varukoopia</h2>
       <div class="card">
-        <p class="note" style="margin-top:0">Tööpäevik, lähetused ja seaded on ainult selles telefonis (tšekipildid on CostPocketis/Drive'is).
-        Tee aeg-ajalt varukoopia ja hoia faili näiteks Google Drive'is.</p>
-        <p class="note"><b>Viimane varukoopia:</b> ${lb ? lb.split('-').reverse().join('.') : 'pole veel tehtud'}</p>
+        ${isNative ? `<p class="note" style="margin-top:0">${ico('kell', 'gold')} <b>Automaatne:</b> kui andmed muutuvad, saadab äpp kord päevas varukoopia (koos tööriistade piltidega) firma Gmaili. Uues telefonis lae kiri „KROX varukoopia“ manus alla ja vajuta siin <b>Taasta failist</b>.</p>
+        <p class="note" id="auto">${autoTxt()}</p>` : `<p class="note" style="margin-top:0">Andmed on ainult selles seadmes. Äpis tehakse varukoopia automaatselt.</p>`}
         <div class="actions" style="margin-top:8px">
-          <button class="btn primary" id="exp">${ico('alla')}Tee varukoopia</button>
+          ${isNative ? `<button class="btn primary" id="autoNow">${ico('yles')}Saada kohe</button>` : ''}
+          <button class="btn${isNative ? '' : ' primary'}" id="exp">${ico('alla')}Salvesta fail</button>
           <button class="btn" id="imp">${ico('yles')}Taasta failist</button>
         </div>
-        <input type="file" id="file" hidden>
+        <input type="file" id="file" multiple hidden>
         <p class="note" id="bmsg"></p>
       </div>
 
@@ -90,16 +91,21 @@ export default {
     };
     $('exp').onclick = async () => {
       const r = await exportAll();
-      $('bmsg').textContent = r === 'downloaded' ? 'Fail laaditi alla (vaata „Allalaaditud“ kausta).' : r === 'shared' ? '✓ Varukoopia saadetud. Hoia seda Drive\'is.' : '';
+      $('bmsg').textContent = r === 'downloaded' ? 'Fail laaditi alla (vaata „Allalaaditud“ kausta).' : r === 'shared' ? '✓ Fail jagatud.' : '';
+    };
+    if ($('autoNow')) $('autoNow').onclick = async () => {
+      $('bmsg').textContent = 'Saadan…';
+      try { const r = await autoBackup(true); $('bmsg').textContent = `✓ Varukoopia saadetud: ${r.to}`; $('auto').innerHTML = autoTxt(); }
+      catch (e) { $('bmsg').textContent = '✗ ' + e.message; }
     };
     $('imp').onclick = () => $('file').click();
     $('file').onchange = async () => {
-      const file = $('file').files[0];
-      if (!file) return;
+      const files = $('file').files;
+      if (!files.length) return;
       if (!confirm('Taastamine asendab praegused andmed failis olevatega. Jätkan?')) return;
       try {
-        const n = await importFile(file);
-        alert(`Taastatud. Tööpäevikus on ${n} kirjet.`);
+        const r = await importFile(files);
+        alert(`Taastatud.${r.andmed ? ` Tööpäevikus on ${r.paevik} kirjet.` : ''}${r.pilte ? ` Pilte: ${r.pilte}.` : ''}`);
         location.hash = '#/';
       } catch (e) { $('bmsg').textContent = 'Viga: ' + e.message; }
     };
