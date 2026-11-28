@@ -1,5 +1,7 @@
 // Kalender: kohtumised, laevapiletid, meeldetuletused, märkmed. Telefoni meeldetuletus läbi Google'i kalendri.
 import { ico } from '../icons.js';
+import { kohtVali } from '../koht.js';
+import { isNative } from '../native.js';
 
 const KEY = 'krox.kalender';
 const KUUD = ['jaanuar', 'veebruar', 'märts', 'aprill', 'mai', 'juuni', 'juuli', 'august', 'september', 'oktoober', 'november', 'detsember'];
@@ -215,7 +217,7 @@ function vorm(el, id, d) {
       ${old ? '<button class="btn danger" id="del">Kustuta</button>' : ''}
     </div>
     ${old ? `<a class="btn" id="gcal" href="${googleLink(e)}" target="_blank" rel="noopener" style="display:block;text-align:center;margin-top:10px">${ico('kell')}Lisa telefoni kalendrisse (meeldetuletus)</a>` : ''}
-    <p class="note">${old ? 'Avab Google\'i kalendri, kus saad meeldetuletuse aja valida.' : 'Pärast salvestamist saad sündmuse telefoni kalendrisse lisada, et tuleks meeldetuletus.'}</p>`;
+    <p class="note">${isNative ? 'Äpp tuletab ise meelde: kellaajaga sündmus tund enne, ilma kellaajata sama päeva hommikul kell 8.' : old ? 'Avab Google\'i kalendri, kus saad meeldetuletuse aja valida.' : 'Pärast salvestamist saad sündmuse telefoni kalendrisse lisada, et tuleks meeldetuletus.'}</p>`;
 
   const $ = (q) => el.querySelector('#' + q);
   const PH = { kohtumine: 'nt Kohtumine kliendiga', laev: 'nt Laev Tallinn → Helsinki', meeldetuletus: 'nt Maksa kütusearve', markus: 'nt Helistada plaatijale' };
@@ -230,6 +232,7 @@ function vorm(el, id, d) {
   };
   el.querySelectorAll('#tyyp button').forEach((b) => (b.onclick = () => setT(b.dataset.v)));
   setT(e.tyyp);
+  kohtVali($('koht'), [...all].sort((a, b) => sortKey(b).localeCompare(sortKey(a))).map((x) => x.koht));
 
   $('save').onclick = () => {
     ['pealkiri', 'kuupaev', 'aeg', 'koht', 'broneering', 'markmed'].forEach((k) => (e[k] = $(k).value.trim()));

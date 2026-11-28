@@ -94,6 +94,34 @@ export function initNative({ onBack }) {
     SB.setStyle({ style: 'DARK' }).catch(() => {});
     SB.setBackgroundColor({ color: '#0b0b0b' }).catch(() => {});
   } catch { /* ignore */ }
+  // Klaviatuur ei tohi sisestusvälja katta
+  let kb = 0, baseH = window.innerHeight;
+  const reveal = () => {
+    const a = document.activeElement;
+    if (!a || !/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) return;
+    const resized = window.innerHeight < baseH - 100;
+    const bottom = window.innerHeight - (resized ? 0 : kb) - 16;
+    const r = a.getBoundingClientRect();
+    if (r.bottom > bottom) window.scrollBy({ top: r.bottom - bottom, behavior: 'smooth' });
+    else if (r.top < 70) window.scrollBy({ top: r.top - 90, behavior: 'smooth' });
+  };
+  try {
+    const K = plugin('Keyboard');
+    K.addListener('keyboardDidShow', (i) => {
+      kb = i?.keyboardHeight || 0;
+      document.body.style.paddingBottom = kb + 'px';
+      setTimeout(reveal, 50);
+    });
+    K.addListener('keyboardDidHide', () => { kb = 0; document.body.style.paddingBottom = ''; baseH = window.innerHeight; });
+  } catch { /* ignore */ }
+  document.addEventListener('focusin', () => setTimeout(reveal, 350));
+  // Välised lingid (Drive, kaart, e-MTA) avanevad telefoni vastavas äpis
+  document.addEventListener('click', (ev) => {
+    const a = ev.target.closest?.('a[href]');
+    if (!a) return;
+    const href = a.getAttribute('href');
+    if (/^https?:/i.test(href) && !href.startsWith(location.origin)) { ev.preventDefault(); location.href = href; }
+  });
   try {
     plugin('App').addListener('backButton', () => {
       if (onBack && onBack()) return;
