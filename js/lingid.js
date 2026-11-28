@@ -32,7 +32,7 @@ function draw() {
       </div>`).join('')}
     <button class="btn" id="lnkAdd" style="width:100%;margin-top:8px">${ico('lisa')}Lisa link</button>
     <p class="note">Vihje: ava leht brauseris, kopeeri aadress ülevalt ja kleebi siia.</p>`
-    : (l.length ? `<div class="lnk-grid">${l.map((x) => `
+    : `<a class="lnk firma-lnk" href="#/firma"><span class="lnk-m">${ico('firma')}</span><span class="lnk-t"><b>Firma andmed</b><small>Reg.kood, KMKR, IBAN, aadress</small></span>${ico('edasi')}</a>` + (l.length ? `<div class="lnk-grid">${l.map((x) => `
       <a class="lnk" href="${esc(fixUrl(x.url))}" target="_blank" rel="noopener">
         <span class="lnk-m">${esc((x.nimi || '?').trim().slice(0, 1).toUpperCase())}</span>
         <span class="lnk-t"><b>${esc(x.nimi)}</b><small>${esc(host(fixUrl(x.url)))}</small></span>

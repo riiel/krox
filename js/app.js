@@ -17,10 +17,11 @@ import kulud from './kulud/kulud.js';
 import kytus from './kytus/kytus.js';
 import ostud from './ostud/ostud.js';
 import toorist from './toorist/toorist.js';
+import firma from './firma.js';
 import kalender, { headerHtml, tulemas } from './kalender/kalender.js';
 
 const tools = [palk, km, pind, plaadid, parkett, varv];
-const all = [paevik, kalender, ostud, toorist, kulud, lahetus, kytus, ...tools, seaded];
+const all = [paevik, kalender, ostud, toorist, kulud, lahetus, kytus, ...tools, seaded, firma];
 const app = document.getElementById('app');
 
 const row = (t) => `

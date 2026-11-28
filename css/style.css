@@ -323,3 +323,16 @@ button.icon-btn { background: none; border: 0; color: var(--muted); }
 .zoom-x { position: absolute; top: 14px; right: 14px; width: 48px; height: 48px; border-radius: 50%; border: 1px solid #333; background: rgba(20,20,20,.8); color: #fff; display: flex; align-items: center; justify-content: center; }
 .zoom-x .ico { width: 22px; height: 22px; margin: 0; }
 .zoom-hint { position: absolute; bottom: 18px; left: 0; right: 0; text-align: center; color: #888; font-size: 13px; pointer-events: none; }
+
+/* Firma andmed */
+.firma-lnk { margin-bottom: 10px; border-color: rgba(196,169,107,.5); }
+.firma-lnk .lnk-m .ico { width: 18px; height: 18px; margin: 0; }
+.firma-list { padding: 4px 0; }
+.firma-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; padding: 12px 16px; background: none; border: 0; border-bottom: 1px solid var(--line); color: inherit; font: inherit; text-align: left; }
+.firma-row:last-child { border-bottom: 0; }
+.firma-row small { display: block; color: var(--muted); font-size: .8rem; margin-bottom: 2px; }
+.firma-row b { font-weight: 600; font-size: 1.02rem; word-break: break-word; }
+.firma-row:active { background: #1d1d21; }
+.firma-c { flex: none; color: var(--muted); width: 22px; text-align: center; }
+.firma-c .ico { width: 20px; height: 20px; margin: 0; }
+.firma-row.ok .firma-c { color: var(--accent); font-weight: 700; }
